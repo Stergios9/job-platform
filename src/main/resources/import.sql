@@ -1,0 +1,4 @@
+-- Insert Books into the 'books' table
+INSERT INTO book (title, author, isbn, published_date) VALUES ('The Great Gatsby', 'F. Scott Fitzgerald', '9780743273565', '1925-04-10');
+INSERT INTO book (title, author, isbn, published_date) VALUES ('1984', 'George Orwell', '9780451524935', '1949-06-08');
+INSERT INTO book (title, author, isbn, published_date) VALUES ('Spring Boot in Action', 'Craig Walls', '9781617292545', '2016-01-03');
