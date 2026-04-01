@@ -27,7 +27,6 @@ public class HomeController {
 
         // 3. Περνάμε τα δεδομένα στο template
         model.addAttribute("username", dbUser.getUsername());
-        model.addAttribute("email", dbUser.getEmail());
         model.addAttribute("role", dbUser.getRole());
 
         return "home";

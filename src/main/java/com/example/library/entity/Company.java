@@ -2,26 +2,60 @@ package com.example.library.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "companies")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Company {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, length = 9)
-    private String afm; // Το ΑΦΜ πρέπει να είναι μοναδικό
+    @Column(unique = true, length = 9, nullable = false)
+    private String afm;
 
-    @OneToOne(mappedBy = "company", cascade = CascadeType.ALL)
+    /**
+     * Η σύνδεση με τον User.
+     * Εδώ μπαίνει το JoinColumn, άρα ο πίνακας 'companies'
+     * θα έχει μια στήλη 'user_id'.
+     */
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    /**
+     * Η σύνδεση με τη Συνδρομή.
+     * CascadeType.ALL σημαίνει: αν σώσω την Company, σώζεται αυτόματα και η Subscription.
+     */
+    @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Subscription subscription;
 
-    @OneToMany(mappedBy = "company")
-    private List<JobPosition> jobs;
+    /**
+     * Η σύνδεση με τις θέσεις εργασίας.
+     */
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobPosition> jobs = new ArrayList<>();
 
-    // Getters and Setters
+    // Βοηθητική μέθοδος για να προσθέτεις jobs εύκολα
+    public void addJob(JobPosition job) {
+        jobs.add(job);
+        job.setCompany(this);
+    }
 
     public Long getId() {
         return id;
@@ -45,6 +79,14 @@ public class Company {
 
     public void setAfm(String afm) {
         this.afm = afm;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Subscription getSubscription() {

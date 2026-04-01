@@ -1,24 +1,49 @@
 package com.example.library.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "job_positions")
+@Getter
+@Setter
+@NoArgsConstructor
 public class JobPosition {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;       // π.χ. Σερβιτόρος
-    private String city;        // π.χ. Αθήνα
-    private double hourlyRate;  // π.χ. 8.50
-    private String description; // Λεπτομέρειες
-    private String businessName;
+    @Column(nullable = false)
+    private String title;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column(nullable = false)
+    private String city;
+
+    @Column(name = "hourly_rate")
+    private Double hourlyRate;
+
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @ManyToOne
-    private User employer;      // Ο χρήστης (Εργοδότης) που ανέβασε τη θέση
+    /**
+     * ΠΟΛΥ ΣΗΜΑΝΤΙΚΟ:
+     * Πολλές θέσεις εργασίας (Many) ανήκουν σε Μία εταιρεία (One).
+     * Με το JoinColumn ορίζουμε το ξένο κλειδί (company_id) στον πίνακα.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 
-    // Getters και Setters
+
+
+    public JobPosition() {
+    }
 
     public Long getId() {
         return id;
@@ -36,22 +61,6 @@ public class JobPosition {
         this.title = title;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public double getHourlyRate() {
-        return hourlyRate;
-    }
-
-    public void setHourlyRate(double hourlyRate) {
-        this.hourlyRate = hourlyRate;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -60,20 +69,20 @@ public class JobPosition {
         this.description = description;
     }
 
-    public User getEmployer() {
-        return employer;
+    public String getCity() {
+        return city;
     }
 
-    public void setEmployer(User employer) {
-        this.employer = employer;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getBusinessName() {
-        return businessName;
+    public Double getHourlyRate() {
+        return hourlyRate;
     }
 
-    public void setBusinessName(String businessName) {
-        this.businessName = businessName;
+    public void setHourlyRate(Double hourlyRate) {
+        this.hourlyRate = hourlyRate;
     }
 
     public String getImageUrl() {
@@ -83,4 +92,13 @@ public class JobPosition {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
 }
+

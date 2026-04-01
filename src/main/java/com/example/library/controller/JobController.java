@@ -15,26 +15,36 @@ import java.util.List;
 @Controller
 @RequestMapping("/jobs")
 public class JobController {
+
     @Autowired
     private JobRepository jobRepository;
 
     @GetMapping("/explore")
     public String explore(Model model, RedirectAttributes redirectAttributes) {
-        List<JobPosition> allJobs = jobRepository.findAll();
-        redirectAttributes.addFlashAttribute("errorMessage", "Empty List");
+        // Φιλτράρουμε ώστε να βλέπουμε μόνο θέσεις από εταιρείες με ενεργή συνδρομή
+        List<JobPosition> allJobs = jobRepository.findAll().stream()
+                .filter(job -> job.getCompany() != null &&
+                        job.getCompany().getSubscription() != null &&
+                        job.getCompany().getSubscription().isActive())
+                .toList();
+
         if (allJobs.isEmpty()) {
-            return "redirect:/";
+            model.addAttribute("errorMessage", "Δεν βρέθηκαν διαθέσιμες θέσεις εργασίας.");
+            // Αντί για redirect, μένουμε στη σελίδα αλλά δείχνουμε το μήνυμα
+            return "jobs/explore";
         }
-        model.addAttribute("allJobs", jobRepository.findAll());
+
+        model.addAttribute("allJobs", allJobs);
         return "jobs/explore";
     }
 
-    // 2. Σελίδα λεπτομερειών (όταν πατάς στην εικόνα/κάρτα)
     @GetMapping("/details/{id}")
     public String showJobDetails(@PathVariable Long id, Model model) {
         JobPosition job = jobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
+
         model.addAttribute("job", job);
+        // Πλέον έχουμε πρόσβαση και στα στοιχεία της εταιρείας μέσω του job.getCompany()
         return "jobs/job-details";
     }
 }
