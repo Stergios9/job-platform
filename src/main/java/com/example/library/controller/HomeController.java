@@ -17,23 +17,18 @@ public class HomeController {
     private UserRepository userRepository;
 
     @GetMapping("/home")
-    public String homePage(Model model, Principal principal, RedirectAttributes redirectAttributes) {
+    public String homePage(Model model, Principal principal) {
+        // 1. Το principal δεν θα είναι ΠΟΤΕ null εδώ, γιατί η Security το εγγυάται
         String username = principal.getName();
-        Optional<User> user = userRepository.findByUsername(username);
-        // Αναζήτηση στη βάση
 
-        if (!(user.isPresent())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Αδυναμία πρόσβασης!");
-            return "redirect:/"; // Επιστροφή στη φόρμα
-        }
-
-        // 2. Go back to the DB to get the FULL User object
+        // 2. Παίρνουμε τον χρήστη από τη βάση
         User dbUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found in DB"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 3. Now you have access to everything!
-        model.addAttribute("user", dbUser.getUsername());
-        model.addAttribute("email", dbUser.getEmail()); // Assuming your User entity has getEmail()
+        // 3. Περνάμε τα δεδομένα στο template
+        model.addAttribute("username", dbUser.getUsername());
+        model.addAttribute("email", dbUser.getEmail());
+        model.addAttribute("role", dbUser.getRole());
 
         return "home";
     }

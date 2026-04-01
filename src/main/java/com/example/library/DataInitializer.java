@@ -1,9 +1,7 @@
 package com.example.library;
 
-import com.example.library.entity.Book;
 import com.example.library.entity.JobPosition;
 import com.example.library.entity.User;
-import com.example.library.repository.BookRepository;
 import com.example.library.repository.JobRepository;
 import com.example.library.repository.UserRepository;
 import com.example.library.service.UserService;
@@ -11,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.time.LocalDate;
 
 @Configuration
 public class DataInitializer {
