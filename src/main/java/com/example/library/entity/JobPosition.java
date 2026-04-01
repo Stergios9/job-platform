@@ -13,6 +13,7 @@ public class JobPosition {
     private double hourlyRate;  // π.χ. 8.50
     private String description; // Λεπτομέρειες
     private String businessName;
+    private String imageUrl;
 
     @ManyToOne
     private User employer;      // Ο χρήστης (Εργοδότης) που ανέβασε τη θέση
@@ -73,5 +74,13 @@ public class JobPosition {
 
     public void setBusinessName(String businessName) {
         this.businessName = businessName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

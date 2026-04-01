@@ -58,19 +58,22 @@ public class DataInitializer {
 //    }
 
     @Bean
-    public CommandLineRunner loadData(UserService userService, JobRepository jobRepository, BCryptPasswordEncoder encoder) {
+    public CommandLineRunner loadData(UserService userService,
+                                      UserRepository userRepository,
+                                      JobRepository jobRepository) {
         return args -> {
+            // Καθαρισμός για να είμαστε σίγουροι επειδή έχεις 'create'
+            jobRepository.deleteAll();
 
+            // 1. Δημιουργία χρηστών αν δεν υπάρχουν
             if (userRepository.findByUsername("boss").isEmpty()) {
-                // 1. Δημιουργία Εργοδότη (Business)
                 User employer = new User();
                 employer.setUsername("boss");
-                employer.setPassword("123"); // Το UserService.registerUser πρέπει να το κάνει encode
+                employer.setPassword("123");
                 employer.setRole("ROLE_EMPLOYER");
                 employer.setCity("Athens");
                 userService.registerUser(employer);
 
-                // 2. Δημιουργία Εργαζόμενου (Worker)
                 User worker = new User();
                 worker.setUsername("giannis");
                 worker.setPassword("123");
@@ -78,30 +81,35 @@ public class DataInitializer {
                 worker.setCity("Athens");
                 userService.registerUser(worker);
 
-                System.out.println("✓ Test Users Created: boss (Employer) & giannis (Worker)");
+                System.out.println("✓ Users registered.");
+            }
 
-                // 3. Δημιουργία μερικών θέσεων εργασίας για τεστ
-                if (jobRepository.count() == 0) {
-                    JobPosition job1 = new JobPosition();
-                    job1.setTitle("Waiter");
-                    job1.setBusinessName("Acropolis Cafe");
-                    job1.setCity("Athens");
-                    job1.setHourlyRate(8.50);
-                    job1.setDescription("Evening shift, 18:00 - 00:00");
-                    job1.setEmployer(employer);
-                    jobRepository.save(job1);
+            // 2. ΠΑΡΑ ΠΟΛΥ ΣΗΜΑΝΤΙΚΟ: Ξαναβρίσκουμε τον boss από τη βάση
+            // για να είμαστε σίγουροι ότι η Hibernate βλέπει το ID του.
+            User bossFromDb = userRepository.findByUsername("boss")
+                    .orElseThrow(() -> new RuntimeException("Boss not found!"));
 
-                    JobPosition job2 = new JobPosition();
-                    job2.setTitle("Delivery");
-                    job2.setBusinessName("Pizza Fast");
-                    job2.setCity("Piraeus");
-                    job2.setHourlyRate(7.00);
-                    job2.setDescription("Morning shift with own motorcycle");
-                    job2.setEmployer(employer);
-                    jobRepository.save(job2);
+            // 3. Δημιουργία θέσεων εργασίας
+            if (jobRepository.count() == 0) {
+                JobPosition job1 = new JobPosition();
+                job1.setTitle("Waiter");
+                job1.setBusinessName("Acropolis Cafe");
+                job1.setCity("Athens");
+                job1.setHourlyRate(8.50);
+                job1.setImageUrl("ice-Cream.png");
+                job1.setEmployer(bossFromDb); // Χρήση του αντικειμένου από τη DB
+                jobRepository.save(job1);
 
-                    System.out.println("✓ Sample Job Positions Created.");
-                }
+                JobPosition job2 = new JobPosition();
+                job2.setTitle("Delivery");
+                job2.setBusinessName("Pizza Fast");
+                job2.setCity("Piraeus");
+                job2.setHourlyRate(7.00);
+                job2.setImageUrl("restaurant.jfif");
+                job2.setEmployer(bossFromDb); // Χρήση του αντικειμένου από τη DB
+                jobRepository.save(job2);
+
+                System.out.println("✓ Job Positions saved successfully!");
             }
         };
     }

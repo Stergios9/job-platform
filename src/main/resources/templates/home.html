@@ -8,9 +8,9 @@
 <p>Find Job <span th:text="${user}">User</span>!</p>
 
 <nav>
-    <a href="/books">View Books</a> |
-    <form th:action="@{/logout}" method="post">
-        <button type="submit">Logout</button>
+    <a href="/book">View Books</a> |
+    <form th:action="@{/jobs/explore}" method="get">
+        <button type="submit">See Jobs</button>
     </form>
 </nav>
 </body>

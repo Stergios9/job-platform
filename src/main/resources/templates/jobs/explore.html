@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Find a Job</title>
+    <style>
+        .job-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+        .job-card { border: 1px solid #ddd; padding: 15px; width: 250px; border-radius: 8px; cursor: pointer; }
+        .job-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
+        .job-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+<h1>Available Job Openings</h1>
+
+<div class="job-grid">
+    <!-- Loop μέσα από όλες τις δουλειές -->
+    <div th:each="job : ${allJobs}" class="job-card">
+        <!-- Κλικ στην εικόνα για μετάβαση στις λεπτομέρειες -->
+        <a th:href="@{/jobs/details/{id}(id=${job.id})}">
+            <img th:src="@{'/images/' + ${job.imageUrl}}"
+                 style="width:150px; border: 2px solid red;"
+                 onerror="this.src='https://via.placeholder.com/150';">
+        </a>
+
+        <h3 th:text="${job.title}">Job Title</h3>
+        <p><strong>Business:</strong> <span th:text="${job.businessName}">Name</span></p>
+        <p><strong>Location:</strong> <span th:text="${job.city}">City</span></p>
+        <p><strong>Pay:</strong> <span th:text="${job.hourlyRate}">0</span>€ / hour</p>
+
+        <a th:href="@{/jobs/details/{id}(id=${job.id})}">View Details</a>
+    </div>
+</div>
+</body>
+</html>
