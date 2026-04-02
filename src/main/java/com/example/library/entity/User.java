@@ -1,10 +1,16 @@
 package com.example.library.entity;
 
-
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -17,18 +23,27 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String email;
-    private String role;
+    @Column(nullable = false)
+    private String role; // Π.χ. "ROLE_EMPLOYER" ή "ROLE_WORKER"
+
     private String city;
 
+    /**
+     * Αν ο χρήστης είναι Employer, μπορεί να έχει ΜΙΑ εταιρεία.
+     * Χρησιμοποιούμε cascade έτσι ώστε αν διαγραφεί ο χρήστης,
+     * να διαγραφούν και τα στοιχεία της εταιρείας του.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Company company;
+
+    // Μέσα στην κλάση User
     public User() {
     }
 
-    public User(Long id, String username, String password, String email, String role, String city) {
-        this.id = id;
+    // Προσθήκη βοηθητικού constructor
+    public User(String username, String password, String role, String city) {
         this.username = username;
         this.password = password;
-        this.email = email;
         this.role = role;
         this.city = city;
     }
@@ -41,14 +56,6 @@ public class User {
         this.id = id;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -57,12 +64,12 @@ public class User {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
+    public String getPassword() {
+        return password;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getRole() {
@@ -79,5 +86,13 @@ public class User {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

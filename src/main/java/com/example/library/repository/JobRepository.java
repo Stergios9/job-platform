@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JobRepository extends JpaRepository<JobPosition, Long> {
-    List<JobPosition> findByCityAndTitleContaining(String city, String title);
+    List<JobPosition> findAll();
 }

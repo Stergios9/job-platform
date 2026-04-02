@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Job Details</title>
+</head>
+<body>
+<h1 th:text="${job.title}">Title</h1>
+<img th:src="@{/images/restaurant.png}" style="width: 400px;">
+
+<h3>Information</h3>
+<p><strong>Employer:</strong> <span th:text="${job.businessName}">Business</span></p>
+<p><strong>Location:</strong> <span th:text="${job.city}">City</span></p>
+<p><strong>Hourly Rate:</strong> <span th:text="${job.hourlyRate}">0</span>€</p>
+
+<hr>
+<h3>Description</h3>
+<p th:text="${job.description}">Detailed description goes here...</p>
+
+<button style="padding: 10px 20px; background-color: #1A494D; color: white;">Apply Now</button>
+<br><br>
+<a th:href="@{/jobs/explore}">Back to all jobs</a>
+</body>
+</html>
