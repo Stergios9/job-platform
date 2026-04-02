@@ -2,38 +2,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Sign Up - Job Platform</title>
+    <title>Φόρμα Εγγραφής</title>
 </head>
 <body>
-<h2>Δημιουργία Λογαριασμού</h2>
-
 <!-- Εμφάνιση μηνύματος σφάλματος αν ο χρήστης υπάρχει ήδη -->
 <div th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></div>
 
+<h2>Εγγραφή ως:
+    <span th:text="${user.role == 'ROLE_WORKER' ? 'Εργαζόμενος' : 'Εργοδότης'}"></span>
+</h2>
+
 <form th:action="@{/user/register}" th:object="${user}" method="post">
+
+    <input type="hidden" th:field="*{role}" />
 
     <input type="text" th:field="*{username}" placeholder="Username" required />
     <br><br>
 
-    <input autocomplete="new-password" type="password" th:field="*{password}" placeholder="Κωδικός" required />
+    <input autocomplete="new-password"  type="password" th:field="*{password}" placeholder="Κωδικός" required />
     <br><br>
 
-    <input type="email" th:field="*{email}" placeholder="Email" />
+    <input type="text" th:field="*{city}" placeholder="Πόλη" />
     <br><br>
 
+    <div th:if="*{role == 'ROLE_EMPLOYER'}">
+        <input type="text" name="companyName" placeholder="Όνομα Επιχείρησης" />
+        <br><br>
+        <input type="text" name="afm" placeholder="ΑΦΜ Επιχείρησης" />
+        <br><br>
+        <input type="text" name="afm" placeholder="ΑΦΜ Επιχείρησης" />
+        <br><br>
+    </div>
 
-    <input type="text" th:field="*{city}" placeholder="City" />
-    <br><br>
-
-    <!-- Επιλογή Ρόλου: Πολύ σημαντικό για την εφαρμογή σου -->
-    <label>Είμαι:</label>
-    <select th:field="*{role}">
-        <option value="ROLE_WORKER">Εργαζόμενος (Ψάχνω δουλειά)</option>
-        <option value="ROLE_EMPLOYER">Εργοδότης (Προσφέρω δουλειά)</option>
-    </select>
-    <br><br>
-
-    <button type="submit">Εγγραφή</button>
+    <button type="submit" style="background-color: #1A494D; color: white; padding: 10px;">
+        Ολοκλήρωση Εγγραφής
+    </button>
 </form>
 
 <p>Έχετε ήδη λογαριασμό; <a th:href="@{/}">Σύνδεση εδώ</a></p>

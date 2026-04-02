@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+  <form th:action="@{/user/register/employer}" th:object="${registrationDto}" method="post">
+
+    <h3>1. Στοιχεία Λογαριασμού (User)</h3>
+    <input type="text" th:field="*{user.username}" placeholder="Email/Username" required />
+    <input autocomplete="new-password" type="password" th:field="*{user.password}" placeholder="Κωδικός" required />
+    <input type="text" th:field="*{user.city}" placeholder="Πόλη" />
+    <input type="hidden" th:field="*{user.role}" value="ROLE_EMPLOYER" />
+
+    <hr>
+    <h3>2. Στοιχεία Επιχείρησης (Company)</h3>
+    <input type="text" th:field="*{company.name}" placeholder="Επωνυμία Επιχείρησης" required />
+    <input type="text" th:field="*{company.afm}" placeholder="ΑΦΜ (9 ψηφία)" maxlength="9" required />
+
+    <hr>
+    <h3>3. Θέση Εργασίας</h3>
+    <input type="text" th:field="*{jobPosition.title}" placeholder="Τίτλος Θέσης (π.χ. Βοηθός Αποθήκης)" required />
+    <input type="number" th:field="*{jobPosition.hourlyRate}" placeholder="Ωρομίσθιο (€)" step="0.1" />
+    <textarea th:field="*{jobPosition.description}" placeholder="Περιγραφή καθηκόντων..."></textarea>
+    <input type="text" th:field="*{jobPosition.city}" placeholder="Πόλη Εργασίας" />
+
+    <button type="submit">Δημιουργία Λογαριασμού & Ανάρτηση</button>
+  </form>
+
+</body>
+</html>

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "job_positions")
 @Getter
 @Setter
-@NoArgsConstructor
+//@NoArgsConstructor
 public class JobPosition {
 
     @Id

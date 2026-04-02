@@ -10,7 +10,7 @@
     </style>
 </head>
 <body>
-<h1>Available Job Openings</h1>
+<h1>Crew Now</h1>
 
 <div class="job-grid">
     <!-- Loop μέσα από όλες τις δουλειές -->
@@ -23,7 +23,8 @@
         </a>
 
         <h3 th:text="${job.title}">Job Title</h3>
-        <p><strong>Business:</strong> <span th:text="${job.businessName}">Name</span></p>
+        <p><strong>Business:</strong> <span th:text="${job.getCompany().getName()}">Business</span></p>
+        <p><strong>Description:</strong> <span th:text="${job.description}">Name</span></p>
         <p><strong>Location:</strong> <span th:text="${job.city}">City</span></p>
         <p><strong>Pay:</strong> <span th:text="${job.hourlyRate}">0</span>€ / hour</p>
 

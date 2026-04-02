@@ -1,5 +1,8 @@
 package com.example.library.controller;
 
+import com.example.library.dto.EmployerRegistrationDTO;
+import com.example.library.entity.Company;
+import com.example.library.entity.JobPosition;
 import com.example.library.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -28,11 +31,11 @@ public class UserController {
     private UserRepository userRepository;
 
 
-   @PostMapping("/")
+    @PostMapping("/")
     public User addUser(@RequestBody User user) {
-       user.setPassword(passwordEncoder.encode(user.getPassword()));
-       return user;
-   }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return user;
+    }
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") User newUser,
@@ -58,15 +61,46 @@ public class UserController {
         redirectAttributes.addFlashAttribute("successMessage", "Η εγγραφή ολοκληρώθηκε!");
         return "redirect:/"; // Πίσω στο login
     }
-
     @GetMapping("/signUp")
-    public String showRegistrationForm(Model model) {
-        // Δημιουργούμε ένα κενό αντικείμενο User για να το γεμίσει η φόρμα
-
-        model.addAttribute("user", new User());
-
-        return "users/registration-form"; // Επιστρέφει το αρχείο register.html
+    public String showChooseRolePage() {
+        return "users/choose-role";
     }
+
+    @GetMapping("/register/details")
+    public String showRegistrationForm(@RequestParam("role") String role, Model model) {
+        if ("ROLE_EMPLOYER".equals(role)) {
+            model.addAttribute("registrationDto", new EmployerRegistrationDTO());
+            return "users/registration-form-employer";
+        }
+        User user = new User();
+        user.setRole("ROLE_WORKER");
+        model.addAttribute("user", user);
+        return "users/registration-form";
+    }
+
+    @PostMapping("/register/employer")
+    public String registerEmployer(@ModelAttribute("registrationDto") EmployerRegistrationDTO dto) {
+        User user = dto.getUser();
+        Company company = dto.getCompany();
+        JobPosition job = dto.getJobPosition();
+
+        // 1. Σύνδεση User <-> Company
+        user.setRole("ROLE_EMPLOYER");
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Μην ξεχάσεις το encoding!
+        company.setUser(user);
+        user.setCompany(company);
+
+        // 2. Σύνδεση Company <-> JobPosition
+        job.setCompany(company);
+        job.setCity(company.getUser().getCity()); // Ή ό,τι πόλη έβαλε στην αγγελία
+        company.getJobs().add(job);
+
+        // 3. Αποθήκευση (Λόγω CascadeType.ALL στο User, θα σωθούν όλα αυτόματα!)
+        userRepository.save(user);
+
+        return "redirect:/login";
+    }
+
 
     @GetMapping("/getAllUsers")
     public List<User> getAll() {

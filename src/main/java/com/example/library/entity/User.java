@@ -2,7 +2,6 @@ package com.example.library.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
@@ -10,7 +9,6 @@ import lombok.Setter;
 @Table(name = "users")
 @Getter
 @Setter
-@NoArgsConstructor
 public class User {
 
     @Id
@@ -28,6 +26,9 @@ public class User {
 
     private String city;
 
+    @Column(nullable = false)
+    private String email;
+
     /**
      * Αν ο χρήστης είναι Employer, μπορεί να έχει ΜΙΑ εταιρεία.
      * Χρησιμοποιούμε cascade έτσι ώστε αν διαγραφεί ο χρήστης,
@@ -40,12 +41,14 @@ public class User {
     public User() {
     }
 
-    // Προσθήκη βοηθητικού constructor
-    public User(String username, String password, String role, String city) {
+    public User(Long id, String username, String password, String role, String city, String email, Company company) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
         this.city = city;
+        this.email = email;
+        this.company = company;
     }
 
     public Long getId() {
@@ -72,6 +75,7 @@ public class User {
         this.password = password;
     }
 
+
     public String getRole() {
         return role;
     }
@@ -86,6 +90,14 @@ public class User {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Company getCompany() {

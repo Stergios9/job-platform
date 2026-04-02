@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,18 +21,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable for now to avoid 403 errors during testing
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/login", "/user/signUp", "/user/register", "/css/**").permitAll()
-                        .requestMatchers("/jobs/post").hasRole("EMPLOYER") // Μόνο εργοδότες
+                        // Πρόσθεσε ΕΔΩ όλα τα URLs που αφορούν το registration
+                        .requestMatchers("/", "/login", "/user/signUp", "/user/register/details","/user/register/employer", "/user/register", "/css/**", "/images/**").permitAll()
+                        .requestMatchers("/jobs/post").hasRole("EMPLOYER")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
-                        .loginPage("/")               // Your initial entry point
-                        .loginProcessingUrl("/login") // The POST target from the HTML form
+                        .loginPage("/")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/home", true)
-                        .failureUrl("/?error=true")   // If fails, go back to "/" with error
+                        .failureUrl("/?error=true")
                         .permitAll()
+                )
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .invalidSessionUrl("/") // Αν το session λήξει, στείλε τον στην αρχική
                 )
                 .logout((logout) -> logout.permitAll());
 
