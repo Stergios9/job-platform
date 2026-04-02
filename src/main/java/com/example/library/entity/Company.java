@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,7 +29,11 @@ public class Company {
     @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, length = 9, nullable = false)
+
+    @Column(unique = true, length = 9)
+    @NotBlank(message = "Το ΑΦΜ είναι υποχρεωτικό")
+    @Size(min = 9, max = 9, message = "Το ΑΦΜ πρέπει να έχει ακριβώς 9 ψηφία")
+    @Pattern(regexp = "^[0-9]*$", message = "Το ΑΦΜ πρέπει να περιέχει μόνο αριθμούς")
     private String afm;
 
     /**
@@ -34,8 +41,9 @@ public class Company {
      * Εδώ μπαίνει το JoinColumn, άρα ο πίνακας 'companies'
      * θα έχει μια στήλη 'user_id'.
      */
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    // Μέσα στην κλάση Company.java
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "user_id")
     private User user;
 
     /**

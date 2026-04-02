@@ -1,27 +1,160 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Job Details</title>
+    <title>Λεπτομέρειες Θέσης - Crew Now</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+            url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .details-container {
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .job-header-img {
+            width: 100%;
+            height: 400px;
+            object-fit: contain; /* Για να μη χάνεις μέρος της φωτό */
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content-padding {
+            padding: 40px;
+        }
+
+        .job-title {
+            color: #1A494D;
+            font-weight: 800;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #e9ecef;
+            color: #1A494D;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .price-tag {
+            color: #28a745;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .description-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #1A494D;
+            margin-top: 25px;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .btn-apply {
+            background-color: #1A494D;
+            color: white;
+            padding: 18px 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            width: 100%;
+            border: none;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-apply:hover {
+            background-color: #143a3d;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(26, 73, 77, 0.3);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #1A494D;
+        }
+    </style>
 </head>
 <body>
-<h1 th:text="${job.title}">Title</h1>
-<img th:src="@{'/images/' + ${job.imageUrl}}" style="width: 400px;">
 
-<h3>Information</h3>
-<p><strong>Employer:</strong> <span th:text="${job.company?.name}">Business</span></p>
-<p><strong>Location:</strong> <span th:text="${job?.city}">City</span></p>
-<p><strong>Hourly Rate:</strong> <span th:text="${job?.hourlyRate}">0</span>€</p>
+<div class="details-container">
+    <img th:src="@{'/images/' + ${job.imageUrl}}"
+         class="job-header-img"
+         alt="Job Banner"
+         onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1000';">
 
-<hr>
-<h3>Description</h3>
-<p th:text="${job.description}">Detailed description goes here...</p>
+    <div class="content-padding">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 class="job-title" th:text="${job.title}">Title</h1>
 
-<form th:action="@{/jobs/apply/{id}(id=${job.id})}" method="post">
-    <button type="submit" style="padding: 10px 20px; background-color: #1A494D; color: white;">
-        Apply Now
-    </button>
-</form>
+                <div class="mb-3">
+                    <span class="info-badge">🏢 <span th:text="${job.company?.name}">Business</span></span>
+                    <span class="info-badge">📍 <span th:text="${job?.city}">City</span></span>
+                </div>
 
-<a th:href="@{/jobs/explore}">Back to all jobs</a>
+                <h4 class="mt-4 fw-bold" style="color: #1A494D;">Περιγραφή Θέσης</h4>
+                <div class="description-box shadow-sm">
+                    <p th:text="${job.description}">Detailed description...</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-center">
+                <div class="p-4 border rounded-4 bg-white shadow-sm h-100 d-flex flex-column justify-content-center">
+                    <p class="text-muted mb-1">Ωρομίσθιο</p>
+                    <div class="price-tag mb-4">
+                        <span th:text="${job?.hourlyRate}">0</span>€ <small class="fs-6 text-muted">/ ώρα</small>
+                    </div>
+
+                    <form th:action="@{/jobs/apply/{id}(id=${job.id})}" method="post">
+                        <button type="submit" class="btn btn-apply">
+                            Apply Now
+                        </button>
+                    </form>
+
+                    <a th:href="@{/jobs/explore}" class="back-link">
+                        ← Επιστροφή στις αγγελίες
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

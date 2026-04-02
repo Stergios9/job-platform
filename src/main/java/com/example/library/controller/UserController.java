@@ -4,6 +4,8 @@ import com.example.library.dto.EmployerRegistrationDTO;
 import com.example.library.entity.Company;
 import com.example.library.entity.JobPosition;
 import com.example.library.repository.UserRepository;
+import com.example.library.service.CompanyService;
+import jakarta.validation.Valid;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.example.library.entity.User;
@@ -11,6 +13,7 @@ import com.example.library.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,6 +32,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CompanyService companyService;
 
 
     @PostMapping("/")
@@ -66,6 +72,7 @@ public class UserController {
         return "users/choose-role";
     }
 
+
     @GetMapping("/register/details")
     public String showRegistrationForm(@RequestParam("role") String role, Model model) {
         if ("ROLE_EMPLOYER".equals(role)) {
@@ -78,27 +85,55 @@ public class UserController {
         return "users/registration-form";
     }
 
+
     @PostMapping("/register/employer")
-    public String registerEmployer(@ModelAttribute("registrationDto") EmployerRegistrationDTO dto) {
-        User user = dto.getUser();
-        Company company = dto.getCompany();
-        JobPosition job = dto.getJobPosition();
+    public String handleRegistration(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
+                                     BindingResult result,
+                                     Model model) {
 
-        // 1. Σύνδεση User <-> Company
-        user.setRole("ROLE_EMPLOYER");
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Μην ξεχάσεις το encoding!
-        company.setUser(user);
-        user.setCompany(company);
+        // 1. Έλεγχος για σφάλματα @Size, @Pattern, @NotBlank κλπ από το DTO
+        if (result.hasErrors()) {
+            // Επιστροφή στο template της εγγραφής (πρόσεξε το όνομα του αρχείου σου, π.χ. "employer-reg")
+            return "/users/registration-form";
+        }
 
-        // 2. Σύνδεση Company <-> JobPosition
-        job.setCompany(company);
-        job.setCity(company.getUser().getCity()); // Ή ό,τι πόλη έβαλε στην αγγελία
-        company.getJobs().add(job);
+        try {
+            User user = dto.getUser();
+            Company company = dto.getCompany();
+            JobPosition job = dto.getJobPosition();
 
-        // 3. Αποθήκευση (Λόγω CascadeType.ALL στο User, θα σωθούν όλα αυτόματα!)
-        userRepository.save(user);
+            // 2. Προετοιμασία Δεδομένων & Συσχετίσεων
+            user.setRole("ROLE_EMPLOYER");
 
-        return "redirect:/login";
+            // Encoding κωδικού (Προϋποθέτει ότι έχεις κάνει @Autowired τον PasswordEncoder)
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            // Αμφίδρομη σύνδεση User <-> Company
+            company.setUser(user);
+            user.setCompany(company);
+
+            // Σύνδεση Company <-> JobPosition
+            job.setCompany(company);
+            company.getJobs().add(job);
+
+            // Αν η πόλη της θέσης είναι κενή, παίρνουμε την πόλη του χρήστη
+            if (job.getCity() == null || job.getCity().isEmpty()) {
+                job.setCity(user.getCity());
+            }
+
+            // 3. Αποθήκευση μέσω του Service (που περιλαμβάνει τον έλεγχο ΑΦΜ)
+            // Λόγω CascadeType.ALL στην Company για User και Jobs, σώζονται όλα μαζί.
+            companyService.saveCompany(company);
+
+        } catch (RuntimeException e) {
+            // 4. Διαχείριση σφάλματος αν το ΑΦΜ υπάρχει ήδη
+            // Το "company.afm" αντιστοιχεί στο path του πεδίου μέσα στο DTO σου
+            result.rejectValue("company.afm", "error.company", e.getMessage());
+            return "/users/registration-form";
+        }
+
+        // Επιτυχία! Ανακατεύθυνση με μήνυμα success
+        return "redirect:/login?success";
     }
 
 

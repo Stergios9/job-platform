@@ -23,76 +23,109 @@ public class DataInitializer {
     private CompanyRepository companyRepository;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+
+
     @Bean
     public CommandLineRunner loadData(UserService userService,
                                       UserRepository userRepository,
-                                      CompanyRepository companyRepository, // Χρειάζεσαι αυτό το Repository
-                                      JobRepository jobRepository) {
+                                      CompanyRepository companyRepository,
+                                      JobRepository jobRepository,
+                                      SubscriptionRepository subscriptionRepository) {
         return args -> {
-            // 1. Καθαρισμός δεδομένων (με τη σωστή σειρά λόγω foreign keys)
-
+            // 1. Καθαρισμός δεδομένων (Σωστή σειρά!)
             subscriptionRepository.deleteAll();
             jobRepository.deleteAll();
             companyRepository.deleteAll();
-            // Προσοχή: το userRepository.deleteAll() αν το θέλεις
+            userRepository.deleteAll(); // Καθαρίζουμε και τους χρήστες για να μην έχουμε διπλότυπα
 
             // 2. Δημιουργία Χρηστών
-            if (userRepository.findByUsername("boss").isEmpty()) {
-                User employer = new User();
-                employer.setUsername("boss");
-                employer.setCity("Athens");
-                employer.setPassword("123");
-                employer.setEmail("boss@gmail.com");
-                employer.setRole("ROLE_EMPLOYER");
-                userService.registerUser(employer);
+            User boss1 = new User();
+            boss1.setUsername("boss1"); // Απλό όνομα για να το βρίσκουμε εύκολα
+            boss1.setCity("Athens");
+            boss1.setPassword("123");
+            boss1.setEmail("boss1@gmail.com");
+            boss1.setRole("ROLE_EMPLOYER");
+            userService.registerUser(boss1);
 
-                User worker = new User();
-                worker.setUsername("giannis");
-                worker.setCity("Thessaloniki");
-                worker.setPassword("123");
-                worker.setEmail("giannis@hotmail.com");
-                worker.setRole("ROLE_WORKER");
-                userService.registerUser(worker);
-            }
+            User boss2 = new User();
+            boss2.setUsername("boss2");
+            boss2.setCity("Chalkida");
+            boss2.setPassword("123");
+            boss2.setEmail("boss2@gmail.com");
+            boss2.setRole("ROLE_EMPLOYER");
+            userService.registerUser(boss2);
 
-            User bossFromDb = userRepository.findByUsername("boss").get();
+            User worker = new User();
+            worker.setUsername("giannis");
+            worker.setCity("Thessaloniki");
+            worker.setPassword("123");
+            worker.setEmail("giannis@hotmail.com");
+            worker.setRole("ROLE_WORKER");
+            userService.registerUser(worker);
 
-            // 3. Δημιουργία Εταιρείας για τον "boss"
-            Company myCompany = new Company();
-            myCompany.setName("Acropolis Group");
-            myCompany.setAfm("123456789");
-            myCompany.setUser(bossFromDb); // Σύνδεση με τον User
+            // 3. Ανάκτηση των χρηστών από τη βάση (για να έχουν το ID και το σωστό state)
+            User boss1FromDb = userRepository.findByUsername("boss1").get();
+            User boss2FromDb = userRepository.findByUsername("boss2").get();
 
-            // 4. Δημιουργία Συνδρομής (Ενεργή για 1 χρόνο)
-            Subscription sub = new Subscription();
-            sub.setStartDate(LocalDate.now());
-            sub.setEndDate(LocalDate.now().plusYears(1));
-            sub.setActive(true);
-            sub.setCompany(myCompany);
+            // 4. Δημιουργία Εταιρείας 1
+            Company company1 = new Company();
+            company1.setName("Acropolis Group");
+            company1.setAfm("111111111");
+            company1.setUser(boss1FromDb);
 
-            myCompany.setSubscription(sub); // Σύνδεση συνδρομής με εταιρεία
-            companyRepository.save(myCompany); // Σώζει και τη συνδρομή λόγω CascadeType.ALL
+            Subscription sub1 = new Subscription();
+            sub1.setStartDate(LocalDate.now());
+            sub1.setEndDate(LocalDate.now().plusYears(1));
+            sub1.setActive(true);
+            sub1.setCompany(company1);
+            company1.setSubscription(sub1);
 
-            // 5. Δημιουργία Θέσεων Εργασίας
+            // 5. Δημιουργία Εταιρείας 2
+            Company company2 = new Company();
+            company2.setName("The Warehouse");
+            company2.setAfm("222222222");
+            company2.setUser(boss2FromDb);
+
+            Subscription sub2 = new Subscription();
+            sub2.setStartDate(LocalDate.now());
+            sub2.setEndDate(LocalDate.now().plusYears(1));
+            sub2.setActive(true);
+            sub2.setCompany(company2);
+            company2.setSubscription(sub2);
+
+            // Αποθήκευση Εταιρειών
+            companyRepository.save(company1);
+            companyRepository.save(company2);
+
+            // 6. Δημιουργία Θέσεων Εργασίας
             JobPosition job1 = new JobPosition();
             job1.setTitle("Waiter");
             job1.setCity("Athens");
             job1.setHourlyRate(8.50);
-            job1.setDescription("Looking for a friendly and efficient waiter to join our team at Acropolis Group. Responsibilities include taking orders, serving food and drinks, and ensuring customer satisfaction. Previous experience in a similar role is a plus, but we are willing to train the right candidate. If you have excellent communication skills and a positive attitude, we would love to hear from you!");
+            job1.setDescription("Excellent waiter needed for Acropolis Group...");
             job1.setImageUrl("ice-Cream.png");
-            job1.setCompany(myCompany); // Σύνδεση με την Εταιρεία
+            job1.setCompany(company1);
             jobRepository.save(job1);
 
             JobPosition job2 = new JobPosition();
             job2.setTitle("Delivery");
             job2.setCity("Piraeus");
             job2.setHourlyRate(7.00);
-            job2.setDescription("We are seeking a reliable and efficient delivery driver to join our team at Acropolis Group. The ideal candidate will have a valid driver's license, a clean driving record, and excellent time management skills. Responsibilities include delivering food orders to customers in a timely manner while ensuring the safety of the food during transit. If you are punctual, customer-oriented, and have a passion for delivering great service, we encourage you to apply!");
+            job2.setDescription("Reliable delivery driver for Acropolis Group...");
             job2.setImageUrl("restaurant.jfif");
-            job2.setCompany(myCompany); // Σύνδεση με την Εταιρεία
+            job2.setCompany(company1);
             jobRepository.save(job2);
 
-            System.out.println("✓ Database initialized with Company, Subscription and Jobs!");
+            JobPosition job3 = new JobPosition();
+            job3.setTitle("Storekeeper");
+            job3.setCity("Chalkida");
+            job3.setHourlyRate(6.00);
+            job3.setDescription("We are seeking for a storekeeper for our main warehouse!");
+            job3.setImageUrl("apothikarios.png");
+            job3.setCompany(company2);
+            jobRepository.save(job3);
+
+            System.out.println("✓ Database fully initialized with 2 Companies and 3 Jobs!");
         };
     }
 }

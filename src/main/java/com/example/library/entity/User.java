@@ -1,8 +1,11 @@
 package com.example.library.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.Pattern;
 
 
 @Entity
@@ -19,6 +22,10 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    // Μέσα στην κλάση User.java
+    @NotBlank(message = "Ο κωδικός είναι υποχρεωτικός")
+    @Size(min = 8, message = "Τουλάχιστον 8 χαρακτήρες")
+    // Μην βάζεις max=20 εδώ, γιατί το BCrypt βγάζει 60 χαρακτήρες!
     private String password;
 
     @Column(nullable = false)
