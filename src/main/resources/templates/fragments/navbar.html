@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<nav th:fragment="navbar"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container">
+    <a class="navbar-brand brand-logo" th:href="@{/home}">
+      JOB<span class="fw-light">PORTAL</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+
+        <li class="nav-item">
+          <a th:href="@{/home}" class="nav-link main-nav-link">Αρχική</a>
+        </li>
+
+        <li class="nav-item" sec:authorize="hasRole('ROLE_EMPLOYER')">
+          <a th:href="@{/jobs/explore/employer}" class="nav-link main-nav-link">Οι Αγγελίες μου</a>
+        </li>
+
+        <li class="nav-item ms-lg-4">
+          <form th:action="@{/logout}" method="post" class="d-inline">
+            <button type="submit" class="btn-logout-link">Αποσύνδεση</button>
+          </form>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+</body>
+</html>

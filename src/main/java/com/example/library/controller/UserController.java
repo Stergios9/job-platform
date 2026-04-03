@@ -77,11 +77,17 @@ public class UserController {
     public String showRegistrationForm(@RequestParam("role") String role, Model model) {
         if ("ROLE_EMPLOYER".equals(role)) {
             model.addAttribute("registrationDto", new EmployerRegistrationDTO());
+            model.addAttribute("isEdit", false); // <--- ΠΡΟΣΘΕΣΕ ΑΥΤΟ
             return "users/registration-form-employer";
         }
+
         User user = new User();
         user.setRole("ROLE_WORKER");
         model.addAttribute("user", user);
+        // Αν και η άλλη φόρμα (registration-form) χρησιμοποιεί το isEdit,
+        // καλό είναι να το βάλεις κι εδώ.
+        model.addAttribute("isEdit", false);
+
         return "users/registration-form";
     }
 

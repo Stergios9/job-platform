@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Οι Αγγελίες μου | Διαχείριση</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* --- ΒΑΣΙΚΟ LAYOUT --- */
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+            url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* --- CSS ΓΙΑ ΤΟ NAVBAR (Οπως στο Home) --- */
+        .custom-navbar {
+            background-color: #1A494D;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%; /* Σημαντικό για flex body */
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: white !important;
+            text-decoration: none;
+        }
+
+        .main-nav-link {
+            font-size: 1.15rem !important; /* Μεγάλη γραμματοσειρά */
+            font-weight: 500;
+            color: rgba(255,255,255,0.9) !important;
+            margin-left: 25px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .main-nav-link:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .btn-logout-link {
+            background: none;
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 6px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            margin-left: 20px;
+        }
+
+        .btn-logout-link:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        /* --- ΠΕΡΙΕΧΟΜΕΝΟ ΣΕΛΙΔΑΣ --- */
+        .main-content {
+            padding: 60px 20px;
+            flex-grow: 1;
+        }
+
+        .main-title {
+            color: white;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- CARDS --- */
+        .job-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.98);
+            height: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .job-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .job-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover; /* Άλλαξα σε cover για πιο Pro look */
+            background-color: #f8f9fa;
+        }
+
+        .job-title {
+            color: #1A494D;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .pay-badge {
+            background-color: #1A494D;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .btn-edit {
+            background-color: #1A494D;
+            color: white;
+            border: none;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 10px;
+            padding: 12px;
+            transition: 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-edit:hover {
+            background-color: #14383a;
+            color: white;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 60px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 650px;
+            margin: 50px auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Navbar Mobile Fix */
+        @media (max-width: 991px) {
+            .navbar-nav { text-align: center; padding: 20px 0; }
+            .main-nav-link { margin: 10px 0; display: block; }
+            .btn-logout-link { margin: 15px auto; display: inline-block; }
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="main-content">
+
+    <div th:if="${param.success}" class="alert alert-success text-center shadow-sm mb-5" role="alert" style="max-width: 600px; margin: 0 auto 30px auto; border-radius: 15px;">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Επιτυχία!</strong> Η αγγελία ενημερώθηκε σωστά.
+    </div>
+
+    <div class="container">
+        <h1 class="main-title">Οι Αγγελίες μου</h1>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${not #lists.isEmpty(employerJobs)}">
+            <div th:each="job : ${employerJobs}" class="col">
+                <div class="card job-card">
+                    <img th:src="@{'/images/' + ${job.imageUrl}}"
+                         class="job-image"
+                         alt="Job Image"
+                         onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=500';">
+
+                    <div class="card-body p-4">
+                        <h3 class="job-title" th:text="${job.title}">Τίτλος</h3>
+                        <span class="company-name text-muted fw-bold d-block mb-3" th:text="'🏢 ' + ${job.company.name}">Εταιρεία</span>
+
+                        <div class="mb-3">
+                            <span class="badge bg-light text-dark border p-2">
+                                📍 <span th:text="${job.city}">Πόλη</span>
+                            </span>
+                        </div>
+
+                        <div class="pay-badge mb-3">
+                            <span th:text="${job.hourlyRate}">0</span>€ / ώρα
+                        </div>
+
+                        <p class="card-text text-muted small" th:text="${#strings.abbreviate(job.description, 90)}">
+                            Σύντομη περιγραφή...
+                        </p>
+
+                        <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn-edit">
+                            ✏️ Επεξεργασία Αγγελίας
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(employerJobs)}" class="empty-state shadow">
+            <h2 class="text-dark mb-3 fw-bold">Δεν έχετε δημοσιεύσει αγγελίες ακόμα.</h2>
+            <p class="text-muted mb-4">Ξεκινήστε τώρα δημιουργώντας την πρώτη σας θέση εργασίας!</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+                <a th:href="@{/jobs/post}" class="btn btn-primary btn-lg px-5 shadow-sm" style="background-color: #1A494D; border:none; border-radius: 12px;">Δημιουργία Αγγελίας</a>
+                <a th:href="@{/home}" class="btn btn-outline-secondary btn-lg px-5" style="border-radius: 12px;">Επιστροφή</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const alert = document.querySelector('.alert-success');
+        if (alert) {
+            setTimeout(() => {
+                alert.style.transition = "all 0.6s ease";
+                alert.style.opacity = "0";
+                alert.style.transform = "translateY(-10px)";
+                setTimeout(() => {
+                    alert.remove();
+                    if (window.history.replaceState) {
+                        const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                        window.history.replaceState({path: url}, '', url);
+                    }
+                }, 600);
+            }, 3500);
+        }
+    });
+</script>
+
+</body>
+</html>
