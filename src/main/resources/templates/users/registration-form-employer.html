@@ -84,25 +84,33 @@
 <body>
 
 <div class="registration-container">
-  <h2>Δημιουργία Λογαριασμού Εργοδότη</h2>
+  <h2 th:text="${isEdit} ? 'Επεξεργασία Αγγελίας' : 'Δημιουργία Λογαριασμού Εργοδότη'">Δημιουργία Λογαριασμού Εργοδότη</h2>
 
-  <form th:action="@{/user/register/employer}" th:object="${registrationDto}" method="post">
+  <form th:action="${isEdit ? '/jobs/update' : '/user/register/employer'}" th:object="${registrationDto}" method="post">
+    <input type="hidden" th:field="*{user.id}" />
+    <input type="hidden" th:field="*{company.id}" />
+    <input type="hidden" th:field="*{jobPosition.id}" />
+    <input type="hidden" th:field="*{user.role}" />
 
     <h3>1. Στοιχεία Λογαριασμού</h3>
     <div class="row">
       <div class="col-md-6 mb-3">
         <label>Email / Username</label>
-        <input type="text" th:field="*{user.username}" class="form-control" placeholder="π.χ. info@company.com" required />
+        <input type="text" th:field="*{user.username}" class="form-control"
+               placeholder="π.χ. info@company.com" th:readonly="${isEdit}" required />
       </div>
-      <div class="col-md-6 mb-3">
+
+      <div class="col-md-6 mb-3" th:if="${!isEdit}">
         <label>Κωδικός Πρόσβασης</label>
-        <input autocomplete="new-password" type="password" th:field="*{user.password}" class="form-control" placeholder="********" required />
+        <input autocomplete="new-password" type="password" th:field="*{user.password}"
+               class="form-control" placeholder="********" required />
       </div>
+      <input type="hidden" th:if="${isEdit}" th:field="*{user.password}" />
+
       <div class="col-md-12 mb-3">
         <label>Πόλη (Έδρα χρήστη)</label>
         <input type="text" th:field="*{user.city}" class="form-control" placeholder="π.χ. Αθήνα" />
       </div>
-      <input type="hidden" th:field="*{user.role}" value="ROLE_EMPLOYER" />
     </div>
 
     <div class="section-divider"></div>
@@ -115,7 +123,8 @@
       </div>
       <div class="col-md-4 mb-3">
         <label>ΑΦΜ</label>
-        <input type="text" th:field="*{company.afm}" class="form-control" placeholder="9 ψηφία" maxlength="9" required />
+        <input type="text" th:field="*{company.afm}" class="form-control"
+               placeholder="9 ψηφία" maxlength="9" th:readonly="${isEdit}" required />
       </div>
     </div>
 
@@ -139,12 +148,20 @@
         <label>Πόλη Εργασίας</label>
         <input type="text" th:field="*{jobPosition.city}" class="form-control" placeholder="Τοποθεσία εργασίας" />
       </div>
+      <input type="hidden" th:field="*{jobPosition.imageUrl}" />
     </div>
 
-    <button type="submit" class="btn btn-submit shadow-sm">Δημιουργία Λογαριασμού & Ανάρτηση</button>
+    <button type="submit" class="btn btn-submit shadow-sm"
+            th:text="${isEdit} ? 'Αποθήκευση Αλλαγών' : 'Δημιουργία Λογαριασμού & Ανάρτηση'">
+      Δημιουργία Λογαριασμού & Ανάρτηση
+    </button>
 
     <div class="text-center mt-3">
-      <a th:href="@{/login}" class="text-decoration-none text-muted small">Έχετε ήδη λογαριασμό; Σύνδεση</a>
+      <a th:href="${isEdit} ? '/jobs/explore/employer' : '/login'"
+         class="text-decoration-none text-muted small"
+         th:text="${isEdit} ? 'Ακύρωση και Επιστροφή' : 'Έχετε ήδη λογαριασμό; Σύνδεση'">
+        Σύνδεση
+      </a>
     </div>
   </form>
 </div>

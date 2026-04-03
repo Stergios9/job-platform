@@ -96,6 +96,17 @@
             </button>
         </form>
     </div>
+<!--    <div th:if="${#authorization.expression('hasRole(''ROLE_EMPLOYER'')')}"></div>-->
+        <div class="mt-4" >
+            <!--        <a th:href="@{/jobs/details/{id}(id=${job.id})}">-->
+            <form th:action="@{/jobs/explore/employer}" method="get">
+                <button type="submit" class="btn btn-explore">
+                    🔍 Δες τις Αγγελίες σου
+                </button>
+            </form>
+        </div>
+
+
 
     <div class="mt-4 border-top pt-3">
         <p class="small text-muted">Είσαι εργοδότης; Διαχειρίσου τις αγγελίες σου από το προφίλ σου.</p>
