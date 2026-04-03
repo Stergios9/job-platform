@@ -4,6 +4,7 @@ import com.example.library.entity.Company;
 import com.example.library.entity.JobPosition;
 import com.example.library.entity.User;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 public class EmployerRegistrationDTO {
 
@@ -12,6 +13,8 @@ public class EmployerRegistrationDTO {
     @Valid
     private Company company;
     private JobPosition jobPosition;
+
+    private MultipartFile certificateFile;
 
     // Constructors, Getters, Setters
     public EmployerRegistrationDTO() {
@@ -42,5 +45,13 @@ public class EmployerRegistrationDTO {
 
     public void setJobPosition(JobPosition jobPosition) {
         this.jobPosition = jobPosition;
+    }
+
+    public MultipartFile getCertificateFile() {
+        return certificateFile;
+    }
+
+    public void setCertificateFile(MultipartFile certificateFile) {
+        this.certificateFile = certificateFile;
     }
 }

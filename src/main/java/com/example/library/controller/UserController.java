@@ -5,6 +5,7 @@ import com.example.library.entity.Company;
 import com.example.library.entity.JobPosition;
 import com.example.library.repository.UserRepository;
 import com.example.library.service.CompanyService;
+import com.example.library.service.FileUploadService;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -17,6 +18,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +38,9 @@ public class UserController {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private FileUploadService fileUploadService;
 
 
     @PostMapping("/")
@@ -94,54 +100,67 @@ public class UserController {
 
     @PostMapping("/register/employer")
     public String handleRegistration(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
-                                     BindingResult result,
-                                     Model model) {
+                                     BindingResult result) {
 
-        // 1. Έλεγχος για σφάλματα @Size, @Pattern, @NotBlank κλπ από το DTO
+
+        // 1. Βασικός έλεγχος Validation (Validation annotations στο DTO)
         if (result.hasErrors()) {
-            // Επιστροφή στο template της εγγραφής (πρόσεξε το όνομα του αρχείου σου, π.χ. "employer-reg")
-            return "/users/registration-form";
+            return "users/registration-form-employer";
+        }
+
+        // 2. Έλεγχος αν το αρχείο PDF είναι κενό (Manual check αν δεν έχεις Custom Validator)
+        if (dto.getCertificateFile() == null || dto.getCertificateFile().isEmpty()) {
+            result.rejectValue("certificateFile", "error.file", "Το πιστοποιητικό σύστασης είναι απαραίτητο.");
+            return "users/registration-form-employer";
         }
 
         try {
+            // 3. Προετοιμασία Δεδομένων
             User user = dto.getUser();
             Company company = dto.getCompany();
             JobPosition job = dto.getJobPosition();
 
-            // 2. Προετοιμασία Δεδομένων & Συσχετίσεων
+            // Ρυθμίσεις Χρήστη
             user.setRole("ROLE_EMPLOYER");
-
-            // Encoding κωδικού (Προϋποθέτει ότι έχεις κάνει @Autowired τον PasswordEncoder)
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-            // Αμφίδρομη σύνδεση User <-> Company
-            company.setUser(user);
+            // Αμφίδρομες Συσχετίσεις (Circular References)
             user.setCompany(company);
+            company.setUser(user);
 
-            // Σύνδεση Company <-> JobPosition
             job.setCompany(company);
+            // Προαιρετικό: αν το List<JobPosition> jobs στην Company είναι initialized
+            if (company.getJobs() == null) {
+                company.setJobs(new ArrayList<>());
+            }
             company.getJobs().add(job);
 
-            // Αν η πόλη της θέσης είναι κενή, παίρνουμε την πόλη του χρήστη
             if (job.getCity() == null || job.getCity().isEmpty()) {
                 job.setCity(user.getCity());
             }
 
-            // 3. Αποθήκευση μέσω του Service (που περιλαμβάνει τον έλεγχο ΑΦΜ)
-            // Λόγω CascadeType.ALL στην Company για User και Jobs, σώζονται όλα μαζί.
+            // 4. Διαχείριση Αρχείου PDF
+            String fileName = fileUploadService.saveCertificate(dto.getCertificateFile());
+            company.setCertificatePath(fileName);
+            company.setVerified(false); // Default false για την Κυπριακή αγορά
+
+            // 5. Αποθήκευση στη Βάση (PostgreSQL)
+            // Λόγω CascadeType.ALL στην Company, θα σωθούν αυτόματα User και JobPosition
             companyService.saveCompany(company);
 
+            return "redirect:/login?success";
+
+        } catch (IOException e) {
+            // Σφάλμα κατά την αποθήκευση του αρχείου στο Ubuntu
+            result.reject("error.upload", "Αποτυχία αποθήκευσης αρχείου: " + e.getMessage());
+            return "users/registration-form-employer";
+
         } catch (RuntimeException e) {
-            // 4. Διαχείριση σφάλματος αν το ΑΦΜ υπάρχει ήδη
-            // Το "company.afm" αντιστοιχεί στο path του πεδίου μέσα στο DTO σου
+            // Σφάλμα από το Service (π.χ. Διπλότυπο ΑΦΜ ή Registration Number)
             result.rejectValue("company.afm", "error.company", e.getMessage());
-            return "/users/registration-form";
+            return "users/registration-form-employer";
         }
-
-        // Επιτυχία! Ανακατεύθυνση με μήνυμα success
-        return "redirect:/login?success";
     }
-
 
     @GetMapping("/getAllUsers")
     public List<User> getAll() {

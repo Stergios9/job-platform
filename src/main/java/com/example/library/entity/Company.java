@@ -46,6 +46,13 @@ public class Company {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // Νέα πεδία για την Κύπρο
+    @Column(unique = true)
+    private String registrationNumber; // π.χ. HE 123456
+
+    private boolean isVerified = false; // Default: False μέχρι να ελεγχθεί από εσένα
+
+    private String certificatePath; // Το όνομα του αρχείου PDF στο δίσκο
     /**
      * Η σύνδεση με τη Συνδρομή.
      * CascadeType.ALL σημαίνει: αν σώσω την Company, σώζεται αυτόματα και η Subscription.
@@ -111,5 +118,29 @@ public class Company {
 
     public void setJobs(List<JobPosition> jobs) {
         this.jobs = jobs;
+    }
+
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public String getCertificatePath() {
+        return certificatePath;
+    }
+
+    public void setCertificatePath(String certificatePath) {
+        this.certificatePath = certificatePath;
     }
 }
