@@ -195,6 +195,10 @@
         </div>
         <input type="hidden" th:field="*{jobPosition.imageUrl}" />
       </div>
+      <div class="mb-3">
+        <label>Εικόνα Επιχείρησης/Αγγελίας:</label>
+        <input type="file" th:field="*{imageFile}" class="form-control" accept="image/*">
+      </div>
 
       <button type="submit" class="btn btn-submit shadow-sm"
               th:text="${isEdit} ? 'Αποθήκευση Αλλαγών' : 'Δημιουργία Λογαριασμού & Ανάρτηση'">

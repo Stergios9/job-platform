@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class Subscription {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,10 +20,6 @@ public class Subscription {
     private LocalDate endDate;
     private boolean active;
 
-    /**
-     * Η σύνδεση με την Εταιρεία.
-     * Η Subscription "δείχνει" στην Company.
-     */
     @OneToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;

@@ -30,12 +30,6 @@ public class JobPosition {
 
     @Column(name = "image_url")
     private String imageUrl;
-
-    /**
-     * ΠΟΛΥ ΣΗΜΑΝΤΙΚΟ:
-     * Πολλές θέσεις εργασίας (Many) ανήκουν σε Μία εταιρεία (One).
-     * Με το JoinColumn ορίζουμε το ξένο κλειδί (company_id) στον πίνακα.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;

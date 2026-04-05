@@ -15,27 +15,21 @@ public class EmployerRegistrationDTO {
     private JobPosition jobPosition;
 
     private MultipartFile certificateFile;
+    private MultipartFile imageFile;
 
-    // Constructors, Getters, Setters
-    public EmployerRegistrationDTO() {
-        this.user = new User();
-        this.company = new Company();
-        this.jobPosition = new JobPosition();
-    }
-
-    public User getUser() {
+    public @Valid User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(@Valid User user) {
         this.user = user;
     }
 
-    public Company getCompany() {
+    public @Valid Company getCompany() {
         return company;
     }
 
-    public void setCompany(Company company) {
+    public void setCompany(@Valid Company company) {
         this.company = company;
     }
 
@@ -53,5 +47,13 @@ public class EmployerRegistrationDTO {
 
     public void setCertificateFile(MultipartFile certificateFile) {
         this.certificateFile = certificateFile;
+    }
+
+    public MultipartFile getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(MultipartFile imageFile) {
+        this.imageFile = imageFile;
     }
 }

@@ -53,6 +53,7 @@ public class JobController {
         // Πλέον έχουμε πρόσβαση και στα στοιχεία της εταιρείας μέσω του job.getCompany()
         return "jobs/job-details";
     }
+
     @PostMapping("/update")
     public String updateJob(@ModelAttribute("registrationDto") EmployerRegistrationDTO dto, Principal principal) {
         // 1. Φορτώνουμε την υπάρχουσα αγγελία από τη βάση για να είμαστε σίγουροι ότι υπάρχει

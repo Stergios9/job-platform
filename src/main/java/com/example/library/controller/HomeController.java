@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
-import java.util.Optional;
 
 @Controller
 public class HomeController {
@@ -18,16 +16,24 @@ public class HomeController {
 
     @GetMapping("/home")
     public String homePage(Model model, Principal principal) {
-        // 1. Το principal δεν θα είναι ΠΟΤΕ null εδώ, γιατί η Security το εγγυάται
         String username = principal.getName();
-
-        // 2. Παίρνουμε τον χρήστη από τη βάση
         User dbUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 3. Περνάμε τα δεδομένα στο template
         model.addAttribute("username", dbUser.getUsername());
         model.addAttribute("role", dbUser.getRole());
+
+        // Έλεγχος Verification ανάλογα με τον τύπο
+        boolean isVerified = false;
+        if ("ROLE_EMPLOYER".equals(dbUser.getRole()) && dbUser.getCompany() != null) {
+            model.addAttribute("isEmployer", dbUser.getRole());
+            isVerified = dbUser.getCompany().isVerified();
+        } else if ("ROLE_WORKER".equals(dbUser.getRole()) && dbUser.getWorkerProfile() != null) {
+            model.addAttribute("isWorker", dbUser.getRole());
+            isVerified = dbUser.getWorkerProfile().isProfileVerified();
+        }
+
+        model.addAttribute("isVerified", isVerified);
 
         return "home";
     }

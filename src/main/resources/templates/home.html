@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Crew Now - Αρχική</title>
     <meta charset="UTF-8">
@@ -163,7 +164,7 @@
             Η επόμενη επαγγελματική σου ευκαιρία σε περιμένει.
         </p>
 
-        <div class="mt-4">
+        <div class="mt-4" th:if="${isWorker}">
             <form th:action="@{/jobs/explore}" method="get">
                 <button type="submit" class="btn btn-explore">
                     🔍 Αναζήτηση Θέσεων Εργασίας
@@ -171,7 +172,7 @@
             </form>
         </div>
 
-        <div class="mt-4" sec:authorize="hasRole('ROLE_EMPLOYER')">
+        <div class="mt-4" th:if="${isEmployer}">
             <form th:action="@{/jobs/explore/employer}" method="get">
                 <button type="submit" class="btn btn-explore" style="background-color: #2a6f75;">
                     💼 Δες τις Αγγελίες σου

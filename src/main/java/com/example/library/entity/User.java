@@ -17,12 +17,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
-    // Μέσα στην κλάση User.java
     @NotBlank(message = "Ο κωδικός είναι υποχρεωτικός")
     @Size(min = 8, message = "Τουλάχιστον 8 χαρακτήρες")
     // Μην βάζεις max=20 εδώ, γιατί το BCrypt βγάζει 60 χαρακτήρες!
@@ -36,13 +34,11 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    /**
-     * Αν ο χρήστης είναι Employer, μπορεί να έχει ΜΙΑ εταιρεία.
-     * Χρησιμοποιούμε cascade έτσι ώστε αν διαγραφεί ο χρήστης,
-     * να διαγραφούν και τα στοιχεία της εταιρείας του.
-     */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Company company;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private WorkerProfile workerProfile;
 
     // Μέσα στην κλάση User
     public User() {
@@ -113,5 +109,13 @@ public class User {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public WorkerProfile getWorkerProfile() {
+        return workerProfile;
+    }
+
+    public void setWorkerProfile(WorkerProfile workerProfile) {
+        this.workerProfile = workerProfile;
     }
 }

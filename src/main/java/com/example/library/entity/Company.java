@@ -5,15 +5,12 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "companies")
@@ -21,7 +18,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Company {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,18 +25,12 @@ public class Company {
     @Column(nullable = false)
     private String name;
 
-
     @Column(unique = true, length = 9)
     @NotBlank(message = "Το ΑΦΜ είναι υποχρεωτικό")
     @Size(min = 9, max = 9, message = "Το ΑΦΜ πρέπει να έχει ακριβώς 9 ψηφία")
     @Pattern(regexp = "^[0-9]*$", message = "Το ΑΦΜ πρέπει να περιέχει μόνο αριθμούς")
     private String afm;
 
-    /**
-     * Η σύνδεση με τον User.
-     * Εδώ μπαίνει το JoinColumn, άρα ο πίνακας 'companies'
-     * θα έχει μια στήλη 'user_id'.
-     */
     // Μέσα στην κλάση Company.java
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
@@ -53,16 +43,10 @@ public class Company {
     private boolean isVerified = false; // Default: False μέχρι να ελεγχθεί από εσένα
 
     private String certificatePath; // Το όνομα του αρχείου PDF στο δίσκο
-    /**
-     * Η σύνδεση με τη Συνδρομή.
-     * CascadeType.ALL σημαίνει: αν σώσω την Company, σώζεται αυτόματα και η Subscription.
-     */
+
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Subscription subscription;
 
-    /**
-     * Η σύνδεση με τις θέσεις εργασίας.
-     */
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobPosition> jobs = new ArrayList<>();
 
