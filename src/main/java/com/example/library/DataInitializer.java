@@ -43,6 +43,7 @@ public class DataInitializer {
             Company company1 = new Company();
             company1.setName("Acropolis Group");
             company1.setAfm("111111111");
+            company1.setCertificatePath("C:User/.../uploads/viografiko.pdf");
 
             company1.setUser(boss1);
             boss1.setCompany(company1);
@@ -62,68 +63,53 @@ public class DataInitializer {
             jobRepository.save(job1);
 // ****************************************************************************** //
 
-            // 1. Δημιουργία 2ou Εργοδότη
-//            User boss2 = new User();
-//            boss2.setUsername("boss2@gmail.com");
-//            boss2.setCity("Chalkida");
-//            boss2.setPassword("12345678");
-//            boss2.setRole("ROLE_EMPLOYER");
-//            userService.registerUser(boss2);
-//
-//            Company company2 = new Company();
-//            company2.setName("The Warehouse");
-//            company2.setAfm("222222222");
-//            company2.setRegistrationNumber("HE22222");
-//            company2.setCertificatePath("/home/user/Documents/certificate2.pdf");
-//            company2.setVerified(true);
-//            company2.setUser(boss2);
-//
-//            Subscription sub2 = new Subscription();
-//            sub2.setStartDate(LocalDate.now());
-//            sub2.setEndDate(LocalDate.now().plusYears(1));
-//            sub2.setActive(true);
-//            sub2.setCompany(company2);
-//            company2.setSubscription(sub2);
-//            companyRepository.save(company2);
-//
-//            // Δημιουργία 1ης θέσης εργασίας για την εταιρεία company2
-//            JobPosition job2 = new JobPosition();
-//            job2.setTitle("Delivery");
-//            job2.setCity("Piraeus");
-//            job2.setHourlyRate(7.00);
-//            job2.setDescription("Reliable delivery driver for Acropolis Group...");
-//            job2.setImageUrl("delivery.jfif");
-//            job2.setCompany(company2);
-//            jobRepository.save(job2);
-//
-//            // Δημιουργία 2ης θέσης εργασίας για την εταιρεία company2
-//            JobPosition job3 = new JobPosition();
-//            job3.setTitle("Storekeeper");
-//            job3.setCity("Chalkida");
-//            job3.setHourlyRate(6.00);
-//            job3.setDescription("We are seeking a storekeeper for our main warehouse!");
-//            job3.setImageUrl("storeman.jpeg");
-//            job3.setCompany(company2);
-//            jobRepository.save(job3);
+//             1. Δημιουργία 2ou Εργοδότη
+            User boss2 = new User();
+            boss2.setUsername("boss2@gmail.com");
+            boss2.setPassword(passwordEncoder.encode("87654321")); // Χειροκίνητο encode
+            boss2.setRole("ROLE_EMPLOYER");
+            boss2.setCity("Athens");
+
+
+            Company company2 = new Company();
+            company2.setName("Coffee Lab");
+            company2.setAfm("222222222");
+            company2.setCertificatePath("C:User/.../uploads/viografiko2.pdf");
+
+            company2.setUser(boss2);
+            boss2.setCompany(company2);
+
+            companyRepository.save(company2);
+
+            // 6. Μετά σώζουμε το Job γιατί χρειάζεται το ID της ήδη σωσμένης Company
+            JobPosition job2 = new JobPosition();
+            job2.setTitle("Delivery");
+            job2.setCity("Salamanina");
+            job2.setHourlyRate(5.50);
+            job2.setDescription("We are looking for a friendly and efficient waiter to deliver our products");
+            job2.setImageUrl("delivery.jfif");
+
+            job2.setCompany(company2);
+            // ... λοιπά πεδία
+            jobRepository.save(job2);
 // ****************************************************************************** //
 
-// 1. Φτιάχνουμε τον User
+            // 1. Φτιάχνουμε τον User
             User workerUser = new User();
             workerUser.setUsername("giannis@hotmail.com");
-            workerUser.setPassword(passwordEncoder.encode("12345678"));
+            workerUser.setPassword(passwordEncoder.encode("21345678"));
             workerUser.setRole("ROLE_WORKER");
             workerUser.setCity("Nigrita");
 
-// 2. Φτιάχνουμε το Profile
+            // 2. Φτιάχνουμε το Profile
             WorkerProfile profile = new WorkerProfile();
             profile.setProfession("Waiter");
-// ... υπόλοιπα πεδία ...
 
-// 3. ΣΥΝΔΕΣΗ
+            // 3. ΣΥΝΔΕΣΗ
             profile.setUser(workerUser);
             workerUser.setWorkerProfile(profile);
 
-// 4. ΣΩΖΟΥΜΕ ΜΟΝΟ ΤΟ PROFILE (ή τον User αν έχει Cascade ALL)
+            // 4. ΣΩΖΟΥΜΕ ΜΟΝΟ ΤΟ PROFILE (ή τον User αν έχει Cascade ALL)
             workerProfileRepository.save(profile);
 
 

@@ -23,7 +23,6 @@ public class User {
     @Column(nullable = false)
     @NotBlank(message = "Ο κωδικός είναι υποχρεωτικός")
     @Size(min = 8, message = "Τουλάχιστον 8 χαρακτήρες")
-    // Μην βάζεις max=20 εδώ, γιατί το BCrypt βγάζει 60 χαρακτήρες!
     private String password;
 
     @Column(nullable = false)

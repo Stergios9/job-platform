@@ -10,4 +10,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     // Η Spring "μεταφράζει" αυτό σε: SELECT COUNT(*) FROM companies WHERE afm = ?
     boolean existsByAfm(String afm);
+
+    boolean existsByRegistrationNumber(String regNumber);
 }

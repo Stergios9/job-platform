@@ -52,9 +52,11 @@ public class CompanyController {
 
     @PostMapping("/register/employer")
     public String handleRegistration(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
-                                     BindingResult result) {
+                                     BindingResult result,Model model) {
 
         if (result.hasErrors()) {
+            // ΠΡΕΠΕΙ να ξαναβάλεις το isEdit γιατί η Thymeleaf το ψάχνει!
+            model.addAttribute("isEdit", false);
             return "users/registration-form-employer";
         }
 

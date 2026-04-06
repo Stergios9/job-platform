@@ -81,7 +81,7 @@ public class UserController {
     @GetMapping("/register/details")
     public String showRegistrationForm(@RequestParam("role") String role, Model model) {
         if ("ROLE_EMPLOYER".equals(role)) {
-;
+
             model.addAttribute("registrationDto", new EmployerRegistrationDTO());
             model.addAttribute("isEdit", false);
             return "users/registration-form-employer";

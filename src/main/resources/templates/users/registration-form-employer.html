@@ -147,12 +147,25 @@
                  placeholder="π.χ. info@company.com" th:readonly="${isEdit}" required />
         </div>
 
-        <div class="col-md-6 mb-3" th:if="${!isEdit}">
+<!--        <div class="col-md-6 mb-3" th:if="${!isEdit}">-->
+<!--          <label>Κωδικός Πρόσβασης</label>-->
+<!--          <input autocomplete="new-password" type="password" th:field="*{user.password}"-->
+<!--                 class="form-control" placeholder="********" required />-->
+<!--        </div>-->
+        <div class="col-md-6 mb-3" th:if="${!(isEdit ?: false)}">
           <label>Κωδικός Πρόσβασης</label>
-          <input autocomplete="new-password" type="password" th:field="*{user.password}"
-                 class="form-control" placeholder="********" required />
+          <input type="password"
+                 th:field="*{user.password}"
+                 class="form-control"
+                 placeholder="********"
+                 minlength="8"
+                 required />
+          <div class="text-danger" th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}"></div>
         </div>
-        <input type="hidden" th:if="${isEdit}" th:field="*{user.password}" />
+
+        <input type="hidden"
+               th:if="${isEdit ?: false}"
+               th:field="*{user.password}" />
 
         <div class="col-md-12 mb-3">
           <label>Πόλη (Έδρα χρήστη)</label>

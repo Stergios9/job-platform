@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class WorkerProfile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +28,8 @@ public class WorkerProfile {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+
     public String getImageUrl() {
         return imageUrl;
     }
