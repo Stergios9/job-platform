@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
                         // Πρόσθεσε ΕΔΩ όλα τα URLs που αφορούν το registration
-                        .requestMatchers("/", "/login", "/user/signUp", "/user/register/details",
+                        .requestMatchers("/", "/login", "/user/signUp", "/user/register/details","/company/register/employer",
                                 "/user/register/employer", "/user/register/worker", // ΠΡΟΣΘΕΣΕ ΑΥΤΟ
                                 "/user/register", "/css/**", "/images/**").permitAll()
                         .requestMatchers("/jobs/post").hasRole("EMPLOYER")

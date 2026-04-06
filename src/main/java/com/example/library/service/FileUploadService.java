@@ -39,4 +39,30 @@ public class FileUploadService {
 
         return fileName; // Επιστρέφουμε το όνομα για να το σώσουμε στη βάση
     }
+
+    // Η κεντρική ρίζα των uploads
+    private final String BASE_UPLOAD_DIR = "uploads/";
+
+    public String saveFile(MultipartFile file, String subDirectory) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        // 1. Δημιουργία του πλήρους path (π.χ. uploads/certificates/)
+        Path uploadPath = Paths.get(BASE_UPLOAD_DIR + subDirectory);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // 2. Καθαρισμός και μοναδικοποίηση ονόματος αρχείου
+        // Χρησιμοποιούμε UUID για να αποφύγουμε overwrite αν δύο χρήστες ανεβάσουν αρχείο με όνομα "document.pdf"
+        String originalFileName = file.getOriginalFilename();
+        String uniqueFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+
+        // 3. Αντιγραφή αρχείου στο δίσκο
+        Path filePath = uploadPath.resolve(uniqueFileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return uniqueFileName; // Επιστρέφουμε το όνομα για αποθήκευση στη DB
+    }
 }

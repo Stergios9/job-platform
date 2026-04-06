@@ -12,10 +12,12 @@ public class WorkerRegistrationDTO {
     // Στοιχεία προφίλ εργαζόμενου (π.χ. επάγγελμα, πόλη κλπ)
     private String profession;
     private String city;
+    private String bio;
 
     // Τα αρχεία που θα ανέβουν στο σύστημα
     private MultipartFile healthCertificateFile; // Πιστοποιητικό Υγείας
-    private MultipartFile identificationFile;      // Ταυτότητα ή ARC
+    private MultipartFile identificationFile;
+    private MultipartFile imageFile;// Ταυτότητα ή ARC
 
     public WorkerRegistrationDTO() {
         this.user = new User();
@@ -45,6 +47,14 @@ public class WorkerRegistrationDTO {
         this.city = city;
     }
 
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
     public MultipartFile getHealthCertificateFile() {
         return healthCertificateFile;
     }
@@ -59,6 +69,14 @@ public class WorkerRegistrationDTO {
 
     public void setIdentificationFile(MultipartFile identificationFile) {
         this.identificationFile = identificationFile;
+    }
+
+    public MultipartFile getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(MultipartFile imageFile) {
+        this.imageFile = imageFile;
     }
 
     // Getters and Setters...

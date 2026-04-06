@@ -148,62 +148,53 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="registration-wrapper">
-    <div class="registration-card">
+    <div class="registration-card shadow-lg">
+        <h2 th:text="${isEdit} ? 'Επεξεργασία Προφίλ' : 'Εγγραφή Εργαζόμενου'">Εγγραφή</h2>
 
-        <div th:if="${errorMessage}" class="alert alert-danger text-center mb-4" style="border-radius: 10px;">
-            <span th:text="${errorMessage}"></span>
-        </div>
+        <form th:action="${isEdit ? '/worker/update' : '/worker/register'}"
+              th:object="${workerDto}"
+              method="post"
+              enctype="multipart/form-data">
 
-        <h2>
-            Εγγραφή <br>
-            <span class="role-badge" th:text="${user.role == 'ROLE_WORKER' ? 'Εργαζόμενος' : 'Εργοδότης'}"></span>
-        </h2>
+            <input type="hidden" th:field="*{user.id}" />
 
-        <form th:action="@{/user/register}" th:object="${user}" method="post">
-            <input type="hidden" th:field="*{role}" />
+            <div class="section-title">Στοιχεία Λογαριασμού</div>
+            <div class="mb-3">
+                <label class="form-label">Username-Email</label>
+                <input type="email" th:field="*{user.username}" class="form-control"
+                       th:readonly="${isEdit}" required />
+            </div>
+
+<!--            <div class="mb-3">-->
+<!--                <label class="form-label">Email</label>-->
+<!--                <input type="email" th:field="*{user.email}" class="form-control" required />-->
+<!--            </div>-->
+
+            <div class="section-title">Απαραίτητα Έγγραφα</div>
+            <div class="mb-3">
+                <label class="form-label">Πιστοποιητικό Υγείας (PDF/Image)</label>
+                <input type="file" th:field="*{healthCertificateFile}" class="form-control" accept=".pdf,image/*" />
+            </div>
 
             <div class="mb-3">
-                <label class="form-label">Username / Email</label>
-                <input type="text" th:field="*{username}" class="form-control" placeholder="Επιλέξτε όνομα χρήστη" required />
+                <label class="form-label">Ταυτότητα / ARC (PDF/Image)</label>
+                <input type="file" th:field="*{identificationFile}" class="form-control" accept=".pdf,image/*" />
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Κωδικός Πρόσβασης</label>
-                <input autocomplete="new-password" type="password" th:field="*{password}" class="form-control" placeholder="********" required />
+                <label class="form-label">Εικόνα Προφίλ</label> <input type="file" th:field="*{imageFile}" class="form-control" accept="image/*" />
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Πόλη Διαμονής</label>
-                <input type="text" th:field="*{city}" class="form-control" placeholder="π.χ. Θεσσαλονίκη" />
-            </div>
-
-            <div th:if="*{role == 'ROLE_EMPLOYER'}">
-                <div class="section-title">Στοιχεία Επιχείρησης</div>
-
-                <div class="mb-3">
-                    <label class="form-label">Όνομα Επιχείρησης</label>
-                    <input type="text" name="companyName" class="form-control" placeholder="π.χ. Tech Solutions" required />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">ΑΦΜ Επιχείρησης</label>
-                    <input type="text" name="afm" class="form-control" placeholder="9-ψήφιος αριθμός" maxlength="9" required />
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-submit shadow-sm mt-3">
-                Ολοκλήρωση Εγγραφής
-            </button>
+            <button type="submit" class="btn btn-submit w-100" th:text="${isEdit} ? 'Ενημέρωση' : 'Εγγραφή'"></button>
         </form>
-
-        <div class="text-center mt-4 pt-3 border-top">
-            <p class="text-muted small">
-                Έχετε ήδη λογαριασμό;
-                <a th:href="@{/}" class="text-decoration-none fw-bold" style="color: #1A494D;">Σύνδεση εδώ</a>
-            </p>
-        </div>
     </div>
 </div>
+    <div class="text-center mt-4 pt-3 border-top">
+        <p class="text-muted small">
+            Έχετε ήδη λογαριασμό;
+            <a th:href="@{/}" class="text-decoration-none fw-bold" style="color: #1A494D;">Σύνδεση εδώ</a>
+        </p>
+    </div>
 
 </body>
 </html>

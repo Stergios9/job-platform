@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
     <style>
-        /* Χρησιμοποιούμε το ίδιο στυλ με την αρχική σου */
+        /* --- ΒΑΣΙΚΟ LAYOUT (Ίδιο με Search Page) --- */
         body {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
             url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-position: center;
@@ -25,92 +27,185 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            padding: 20px;
+            padding: 60px 20px;
         }
 
-        .details-container {
-            background-color: rgba(255, 255, 255, 0.95);
+        /* --- Διόρθωση Navbar για να φαίνεται η οριζόντια γραμμή στην κορυφή --- */
+        .custom-navbar {
+            background-color: #1A494D !important;
+            padding: 10px 0;
+            width: 100%;
+            position: relative;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Προσαρμογή του content-wrapper για να μην κολλάει στο Navbar */
+        .content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center; /* Κεντράρισμα κάρτας */
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* --- DETAILS CONTAINER STYLING --- */
+        .details-card {
+            background-color: rgba(255, 255, 255, 0.98);
+            border: none;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 900px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Διορθωμένο Image Header για να φαίνεται ολόκληρη η εικόνα --- */
+        .job-header-wrapper {
+            width: 100%;
+            height: 400px; /* Αυξάνουμε λίγο το ύψος για τις λεπτομέρειες */
+            background-color: #f8f9fa; /* Ουδέτερο background για τα κενά */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-bottom: 5px solid #1A494D;
+            padding: 20px; /* Padding για να μην κολλάει η εικόνα στις άκρες */
+        }
+
+        .job-header-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain; /* Εμφάνιση ολόκληρης της εικόνας */
+            border-radius: 15px; /* Προαιρετικά, στρογγυλεμένες γωνίες στην ίδια την εικόνα */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+
+        .no-image-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .details-body {
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 800px; /* Λίγο πιο πλατύ για τις πληροφορίες */
         }
 
-        .job-title {
+        .job-title-large {
             color: #1A494D;
-            font-size: 2.5rem;
             font-weight: 800;
+            font-size: 2.8rem;
             margin-bottom: 5px;
+            letter-spacing: -1px;
         }
 
-        .company-name {
+        .company-link {
             color: #6c757d;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .info-label {
-            color: #1A494D;
             font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: 0.3s;
         }
 
-        .info-value {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            color: #333;
+        .company-link:hover {
+            color: #1A494D;
         }
 
-        .description-box {
-            background: rgba(26, 73, 77, 0.05);
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 15px;
             padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #1A494D;
-            margin: 20px 0;
-            text-align: left;
-            white-space: pre-line; /* Διατηρεί τις αλλαγές γραμμής της περιγραφής */
+            margin: 25px 0;
         }
 
-        .hourly-rate {
-            font-size: 1.5rem;
-            color: #2a6f75;
+        .pay-badge-large {
+            background: linear-gradient(135deg, #1A494D 0%, #2a6f75 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
             font-weight: 800;
+            font-size: 1.4rem;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(26, 73, 77, 0.3);
         }
 
-        .btn-action {
+        .description-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #444;
+            white-space: pre-line;
+            text-align: justify;
+        }
+
+        .section-label {
+            color: #1A494D;
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: "";
+            flex-grow: 1;
+            height: 2px;
+            background: rgba(26, 73, 77, 0.1);
+        }
+
+        /* --- BUTTONS --- */
+        .btn-apply {
             background-color: #1A494D;
             color: white;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-radius: 15px;
+            transition: all 0.3s;
             border: none;
+            box-shadow: 0 10px 20px rgba(26, 73, 77, 0.2);
         }
 
-        .btn-action:hover {
+        .btn-apply:hover {
             background-color: #143a3d;
+            transform: scale(1.05);
             color: white;
-            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(26, 73, 77, 0.4);
         }
 
-        .btn-back {
+        .btn-back-custom {
             color: #6c757d;
+            font-weight: 700;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
         }
 
-        .btn-back:hover {
+        .btn-back-custom:hover {
             color: #1A494D;
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .job-title-large { font-size: 2rem; }
+            .details-body { padding: 25px; }
         }
     </style>
 </head>
@@ -119,58 +214,83 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <div class="details-container text-center">
+    <div class="details-card">
 
-        <div th:if="${job.imageUrl != null and !job.imageUrl.empty}" class="mb-4">
-            <img th:src="@{'/images/' + ${job.imageUrl}}"
-                 alt="Job Image"
-                 class="img-fluid rounded-3 shadow"
-                 style="max-height: 250px; width: 100%; object-fit: cover; border: 4px solid white;">
-        </div>
+        <div class="details-card">
 
-        <div th:unless="${job.imageUrl != null and !job.imageUrl.empty}" class="mb-4">
-            <div class="d-inline-block p-4 rounded-circle bg-light shadow-sm">
-                <span style="font-size: 3rem;">💼</span>
+            <div class="job-header-wrapper" th:if="${job.imageUrl != null and !#strings.isEmpty(job.imageUrl)}">
+                <img th:src="@{'/images/' + ${job.imageUrl}}"
+                     class="job-header-image"
+                     alt="Job Header"
+                     onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200';">
             </div>
-        </div>
 
-        <div class="mb-4">
-            <h1 class="job-title" th:text="${job.title}">Τίτλος Θέσης</h1>
-            <span class="company-name" th:text="${job.company.name}">Όνομα Εταιρείας</span>
-        </div>
-
-        <div class="row text-start">
-            <div class="col-md-6">
-                <div class="info-label">📍 Τοποθεσία</div>
-                <div class="info-value" th:text="${job.city}">Αθήνα</div>
+            <div th:unless="${job.imageUrl != null and !#strings.isEmpty(job.imageUrl)}" class="no-image-placeholder text-muted">
+                <i class="bi bi-briefcase-fill" style="font-size: 5rem;"></i>
             </div>
-            <div class="col-md-6">
-                <div class="info-label">💰 Ωριαία Αντιμισθία</div>
-                <div class="info-value hourly-rate">
-                    <span th:text="${job.hourlyRate}">0.00</span>€ / ώρα
+
+            <div class="details-body">
+
+        <div class="details-body">
+            <div class="row align-items-end mb-4">
+                <div class="col-lg-8 text-center text-lg-start">
+                    <h1 class="job-title-large" th:text="${job.title}">Τίτλος Θέσης</h1>
+                    <a href="#" class="company-link">
+                        <i class="bi bi-building"></i> <span th:text="${job.company.name}">Όνομα Εταιρείας</span>
+                    </a>
+                </div>
+                <div class="col-lg-4 text-center text-lg-end mt-3 mt-lg-0">
+                    <div class="pay-badge-large">
+                        <span th:text="${job.hourlyRate}">0.00</span>€ / ώρα
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="info-label text-start">📝 Περιγραφή Θέσης</div>
-        <div class="description-box" th:text="${job.description}">
-            Εδώ θα εμφανίζεται η περιγραφή της θέσης εργασίας...
-        </div>
+            <div class="info-section">
+                <div class="row g-4">
+                    <div class="col-md-4 text-center border-end border-md-none">
+                        <div class="text-muted small fw-bold text-uppercase">Τοποθεσία</div>
+                        <div class="fw-bold text-dark"><i class="bi bi-geo-alt-fill text-danger"></i> <span th:text="${job.city}">Αθήνα</span></div>
+                    </div>
+                    <div class="col-md-4 text-center border-end border-md-none">
+                        <div class="text-muted small fw-bold text-uppercase">Κατηγορία</div>
+                        <div class="fw-bold text-dark"><i class="bi bi-tag-fill text-primary"></i> Εστίαση</div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="text-muted small fw-bold text-uppercase">Επικοινωνία</div>
+                        <div class="fw-bold text-dark"><i class="bi bi-envelope-at-fill text-success"></i> <span th:text="${job.company.user.email}">email</span></div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="mt-4 pt-3 border-top">
-            <div class="info-label">📧 Στοιχεία Επικοινωνίας</div>
-            <p class="info-value" th:text="${job.company.user.email}">email@company.com</p>
-        </div>
+            <div class="section-label">
+                <i class="bi bi-card-text"></i> Περιγραφή Θέσης
+            </div>
+            <div class="description-text mb-5" th:text="${job.description}">
+                Περιγραφή...
+            </div>
 
-        <div class="mt-5 d-flex justify-content-between align-items-center">
-            <a href="javascript:history.back()" class="btn-back">← Επιστροφή</a>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-5 pt-4 border-top">
+                <a href="javascript:history.back()" class="btn-back-custom mb-3 mb-md-0">
+                    <i class="bi bi-arrow-left-circle"></i> Επιστροφή στην Αναζήτηση
+                </a>
 
-            <div sec:authorize="hasRole('WORKER')">
-                <a href="#" class="btn-action">Υποβολή Ενδιαφέροντος</a>
+                <div sec:authorize="hasRole('WORKER')">
+                    <button class="btn btn-apply px-5 shadow">
+                        Υποβολή Ενδιαφέροντος <i class="bi bi-send-fill ms-2"></i>
+                    </button>
+                </div>
+
+                <div sec:authorize="hasRole('EMPLOYER')" th:if="${#authentication.name == job.company.user.username}">
+                    <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn btn-apply px-5 shadow" style="background-color: #2a6f75;">
+                        Επεξεργασία Αγγελίας <i class="bi bi-pencil-square ms-2"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

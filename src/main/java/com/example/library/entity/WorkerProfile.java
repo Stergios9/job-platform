@@ -3,6 +3,7 @@ package com.example.library.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Getter
@@ -20,9 +21,19 @@ public class WorkerProfile {
     private String profession; // π.χ. Μπάρμαν
     private String bio;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public Long getId() {
         return id;

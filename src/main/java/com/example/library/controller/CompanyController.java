@@ -4,7 +4,9 @@ package com.example.library.controller;
 import com.example.library.dto.EmployerRegistrationDTO;
 import com.example.library.entity.Company;
 import com.example.library.entity.JobPosition;
+import com.example.library.entity.Subscription;
 import com.example.library.entity.User;
+import com.example.library.repository.JobRepository;
 import com.example.library.repository.UserRepository;
 import com.example.library.service.CompanyService;
 import com.example.library.service.FileUploadService;
@@ -23,12 +25,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
-//@RequestMapping("/company")
+@RequestMapping("/company")
 @RequiredArgsConstructor
 public class CompanyController {
 
@@ -39,7 +42,7 @@ public class CompanyController {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
+    private JobRepository jobRepository;
 
     @Autowired
     private CompanyService companyService;
@@ -51,51 +54,63 @@ public class CompanyController {
     public String handleRegistration(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
                                      BindingResult result) {
 
-        // 1. Validation (Έλεγχος αν υπάρχουν λάθη στα πεδία)
         if (result.hasErrors()) {
             return "users/registration-form-employer";
         }
 
-        // 2. Έλεγχος αρχείων
-        if (dto.getCertificateFile().isEmpty()) {
-            result.rejectValue("certificateFile", "error.file", "Το πιστοποιητικό είναι υποχρεωτικό.");
+        // Έλεγχος υποχρεωτικού αρχείου άδειας
+        if (dto.getCertificateFile() == null || dto.getCertificateFile().isEmpty()) {
+            result.rejectValue("certificateFile", "error.required", "Το πιστοποιητικό είναι υποχρεωτικό.");
             return "users/registration-form-employer";
         }
 
-        try {
-            User user = dto.getUser();
-            Company company = dto.getCompany();
-            JobPosition job = dto.getJobPosition();
+        User user = dto.getUser();
+        Company company = dto.getCompany();
+        JobPosition job = dto.getJobPosition();
 
-            // 3. Επεξεργασία User
+        try {
+            // 1. ΠΡΟΕΤΟΙΜΑΣΙΑ USER
             user.setRole("ROLE_EMPLOYER");
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-            // 4. ΑΝΕΒΑΣΜΑ ΑΡΧΕΙΩΝ
-            // Ανέβασμα Πιστοποιητικού (PDF)
-            String certName = fileUploadService.saveImage(dto.getCertificateFile());
-            company.setCertificatePath(certName);
+            // ΣΗΜΑΝΤΙΚΟ: Αποθηκεύουμε τον User και κρατάμε το επιστρεφόμενο instance (savedUser)
+            User savedUser = userService.save(user);
 
-            // Ανέβασμα Εικόνας Επιχείρησης (αν ο χρήστης επέλεξε αρχείο)
-            if (dto.getImageFile() != null && !dto.getImageFile().isEmpty()) {
-                String imageName = fileUploadService.saveImage(dto.getImageFile());
-                job.setImageUrl(imageName); // Εδώ αποθηκεύεται το όνομα του αρχείου στη βάση
-            }
+            // 2. ΠΡΟΕΤΟΙΜΑΣΙΑ COMPANY
+            // Σύνδεση με τον savedUser (που έχει πλέον ID)
+            company.setUser(savedUser);
 
-            // 5. Συσχετίσεις
-            user.setCompany(company);
-            company.setUser(user);
+            // Αν ο User έχει mappedBy στην Company, πρέπει να ενημερώσεις και την άλλη πλευρά
+            savedUser.setCompany(company);
 
-            job.setCompany(company);
-            company.getJobs().add(job);
+            // Πιστοποιητικά κλπ
+            String certFile = fileUploadService.saveFile(dto.getCertificateFile(), "certificates");
+            company.setCertificatePath(certFile);
+            company.setVerified(true);
 
-            // 6. Αποθήκευση
-            companyService.saveCompany(company);
+            // 3. ΣΥΝΔΡΟΜΗ
+            Subscription sub = new Subscription();
+            sub.setStartDate(LocalDate.now());
+            sub.setEndDate(LocalDate.now().plusYears(1));
+            sub.setActive(true);
+            sub.setCompany(company);
+            company.setSubscription(sub);
+
+            // 4. ΑΠΟΘΗΚΕΥΣΗ ΕΤΑΙΡΕΙΑΣ
+            // Επειδή ο savedUser είναι ήδη "Persistent", το Hibernate δεν θα προσπαθήσει
+            // να κάνει ξανά INSERT, αλλά απλώς θα ενημερώσει το foreign key.
+            Company savedCompany = companyService.saveCompany(company);
+
+            // 5. ΠΡΟΕΤΟΙΜΑΣΙΑ & ΑΠΟΘΗΚΕΥΣΗ JOB
+            job.setCompany(savedCompany);
+            jobRepository.save(job);
 
             return "redirect:/login?success";
 
-        } catch (IOException e) {
-            result.reject("error.upload", "Σφάλμα κατά την αποθήκευση: " + e.getMessage());
+        } catch (Exception e) {
+            // Καταγραφή του λάθους για να ξέρεις τι φταίει
+            e.printStackTrace();
+            result.reject("error.global", "Σφάλμα κατά την αποθήκευση: " + e.getMessage());
             return "users/registration-form-employer";
         }
     }

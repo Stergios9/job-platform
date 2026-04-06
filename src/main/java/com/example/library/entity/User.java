@@ -31,8 +31,8 @@ public class User {
 
     private String city;
 
-    @Column(nullable = false)
-    private String email;
+//    @Column(nullable = false)
+//    private String email;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Company company;
@@ -50,7 +50,6 @@ public class User {
         this.password = password;
         this.role = role;
         this.city = city;
-        this.email = email;
         this.company = company;
     }
 
@@ -93,14 +92,6 @@ public class User {
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public Company getCompany() {

@@ -130,7 +130,9 @@
   <div class="registration-container">
     <h2 th:text="${isEdit} ? 'Επεξεργασία Αγγελίας' : 'Δημιουργία Λογαριασμού Εργοδότη'">Δημιουργία Λογαριασμού Εργοδότη</h2>
 
-    <form th:action="${isEdit ? '/jobs/update' : '/user/register/employer'}" th:object="${registrationDto}" method="post">
+    <form th:action="${isEdit ? '/jobs/update' : '/company/register/employer'}"
+          th:object="${registrationDto}" method="post"
+          enctype="multipart/form-data">
 
       <input type="hidden" th:field="*{user.id}" />
       <input type="hidden" th:field="*{company.id}" />
@@ -141,7 +143,7 @@
       <div class="row">
         <div class="col-md-6 mb-3">
           <label>Email / Username</label>
-          <input type="text" th:field="*{user.username}" class="form-control"
+          <input type="email" th:field="*{user.username}" class="form-control"
                  placeholder="π.χ. info@company.com" th:readonly="${isEdit}" required />
         </div>
 
@@ -154,7 +156,7 @@
 
         <div class="col-md-12 mb-3">
           <label>Πόλη (Έδρα χρήστη)</label>
-          <input type="text" th:field="*{user.city}" class="form-control" placeholder="π.χ. Αθήνα" />
+          <input type="text" th:field="*{user.city}" class="form-control" th:value="'Nigrita'" placeholder="π.χ. Αθήνα" />
         </div>
       </div>
 
@@ -164,12 +166,16 @@
       <div class="row">
         <div class="col-md-8 mb-3">
           <label>Επωνυμία Επιχείρησης</label>
-          <input type="text" th:field="*{company.name}" class="form-control" placeholder="π.χ. Acropolis Catering" required />
+          <input type="text" th:field="*{company.name}" class="form-control"  placeholder="π.χ. Acropolis Catering" required />
         </div>
         <div class="col-md-4 mb-3">
           <label>ΑΦΜ</label>
           <input type="text" th:field="*{company.afm}" class="form-control"
                  placeholder="9 ψηφία" maxlength="9" th:readonly="${isEdit}" required />
+        </div>
+        <div class="mb-3">
+          <label>Άδεια Λειτουργίας Επιχείρησης (PDF/Image)</label>
+          <input type="file" th:field="*{certificateFile}" class="form-control" accept=".pdf,image/*" required />
         </div>
       </div>
 
@@ -193,12 +199,32 @@
           <label>Πόλη Εργασίας</label>
           <input type="text" th:field="*{jobPosition.city}" class="form-control" placeholder="Τοποθεσία εργασίας" />
         </div>
-        <input type="hidden" th:field="*{jobPosition.imageUrl}" />
+<!--        <input type="hidden" th:field="*{jobPosition.imageUrl}" />-->
       </div>
-      <div class="mb-3">
-        <label>Εικόνα Επιχείρησης/Αγγελίας:</label>
-        <input type="file" th:field="*{imageFile}" class="form-control" accept="image/*">
+
+      <div class="section-divider"></div>
+
+      <h3>4. Εικόνα Αγγελίας / Επιχείρησης</h3>
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label>Φωτογραφία Αγγελίας</label>
+          <input type="file" th:field="*{imageFile}" class="form-control" accept="image/*" />
+          <div class="form-text">Ανεβάστε μια φωτογραφία που αντιπροσωπεύει τη θέση εργασίας ή την επιχείρησή σας.</div>
+
+          <div th:if="${isEdit and registrationDto.jobPosition.imageUrl != null}" class="mt-2">
+            <small class="text-muted">Τρέχουσα εικόνα: </small>
+            <span class="badge bg-secondary" th:text="${registrationDto.jobPosition.imageUrl}">image.jpg</span>
+          </div>
+        </div>
       </div>
+
+      <input type="hidden" th:if="${isEdit}" th:field="*{jobPosition.imageUrl}" />
+
+<!--      Αν δημιουργείται πρόβλημα στο binding του imageFile, μπορεί να αφαιρεθεί το th:field και να χρησιμοποιηθεί απλά name="imageFile" όπως παρακάτω:-->
+<!--      <div class="mb-3">-->
+<!--        <label>Εικόνα Επιχείρησης/Αγγελίας:</label>-->
+<!--        <input type="file" name="imageFile" class="form-control" accept="image/*">-->
+<!--      </div>-->
 
       <button type="submit" class="btn btn-submit shadow-sm"
               th:text="${isEdit} ? 'Αποθήκευση Αλλαγών' : 'Δημιουργία Λογαριασμού & Ανάρτηση'">

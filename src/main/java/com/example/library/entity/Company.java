@@ -31,10 +31,15 @@ public class Company {
     @Pattern(regexp = "^[0-9]*$", message = "Το ΑΦΜ πρέπει να περιέχει μόνο αριθμούς")
     private String afm;
 
-    // Μέσα στην κλάση Company.java
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "user_id", referencedColumnName = "id") // ΜΟΝΟ ΕΝΑ JOIN COLUMN ΕΔΩ
     private User user;
+
+    @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Subscription subscription;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobPosition> jobs = new ArrayList<>();
 
     // Νέα πεδία για την Κύπρο
     @Column(unique = true)
@@ -44,11 +49,6 @@ public class Company {
 
     private String certificatePath; // Το όνομα του αρχείου PDF στο δίσκο
 
-    @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Subscription subscription;
-
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JobPosition> jobs = new ArrayList<>();
 
     // Βοηθητική μέθοδος για να προσθέτεις jobs εύκολα
     public void addJob(JobPosition job) {
