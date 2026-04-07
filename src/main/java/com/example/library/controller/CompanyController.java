@@ -11,6 +11,7 @@ import com.example.library.repository.UserRepository;
 import com.example.library.service.CompanyService;
 import com.example.library.service.FileUploadService;
 import com.example.library.service.UserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ public class CompanyController {
     @Autowired
     private FileUploadService fileUploadService;
 
+    @Transactional
     @PostMapping("/register/employer")
     public String handleRegistration(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
                                      BindingResult result,Model model) {
@@ -66,55 +68,45 @@ public class CompanyController {
             return "users/registration-form-employer";
         }
 
-        User user = dto.getUser();
-        Company company = dto.getCompany();
-        JobPosition job = dto.getJobPosition();
-
         try {
-            // 1. ΠΡΟΕΤΟΙΜΑΣΙΑ USER
+
+            // 1. ΠΡΩΤΑ ΕΛΕΓΧΟΣ ΑΦΜ (Πριν κάνεις οτιδήποτε άλλο)
+            if (companyService.existsByAfm(dto.getCompany().getAfm())) {
+                result.rejectValue("company.afm", "error.duplicate", "Το ΑΦΜ είναι ήδη εγγεγραμμένο!");
+                return "company/registration-form-employer";
+            }
+            User user = dto.getUser();
+            Company company = dto.getCompany();
             user.setRole("ROLE_EMPLOYER");
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-            // ΣΗΜΑΝΤΙΚΟ: Αποθηκεύουμε τον User και κρατάμε το επιστρεφόμενο instance (savedUser)
-            User savedUser = userService.save(user);
-
-            // 2. ΠΡΟΕΤΟΙΜΑΣΙΑ COMPANY
-            // Σύνδεση με τον savedUser (που έχει πλέον ID)
-            company.setUser(savedUser);
-
-            // Αν ο User έχει mappedBy στην Company, πρέπει να ενημερώσεις και την άλλη πλευρά
-            savedUser.setCompany(company);
-
+            // 4. ΣΥΝΔΕΣΗ (Χειροκίνητα)
+            company.setUser(user);
             // Πιστοποιητικά κλπ
             String certFile = fileUploadService.saveFile(dto.getCertificateFile(), "certificates");
             company.setCertificatePath(certFile);
             company.setVerified(true);
 
             // 3. ΣΥΝΔΡΟΜΗ
-            Subscription sub = new Subscription();
-            sub.setStartDate(LocalDate.now());
-            sub.setEndDate(LocalDate.now().plusYears(1));
-            sub.setActive(true);
-            sub.setCompany(company);
-            company.setSubscription(sub);
+            companyService.createSubscription(company);
+            user.setCompany(company);
 
-            // 4. ΑΠΟΘΗΚΕΥΣΗ ΕΤΑΙΡΕΙΑΣ
-            // Επειδή ο savedUser είναι ήδη "Persistent", το Hibernate δεν θα προσπαθήσει
-            // να κάνει ξανά INSERT, αλλά απλώς θα ενημερώσει το foreign key.
-            Company savedCompany = companyService.saveCompany(company);
+            // 5. ΕΝΑ ΚΑΙ ΜΟΝΑΔΙΚΟ SAVE
+            // Εφόσον έχεις CascadeType.ALL στον User, σώζοντας τον User σώζονται ΤΑ ΠΑΝΤΑ
+            // (Company, Subscription κλπ) σε ένα transaction.
+//            userService.save(user);
+            companyService.saveCompany(company);
 
-            // 5. ΠΡΟΕΤΟΙΜΑΣΙΑ & ΑΠΟΘΗΚΕΥΣΗ JOB
-            job.setCompany(savedCompany);
+            // 6. JobPosition (αν δεν έχεις cascade από Company σε Job)
+            JobPosition job = dto.getJobPosition();
+            job.setCompany(company);
             jobRepository.save(job);
-
-            return "redirect:/login?success";
+            return "redirect:/";
 
         } catch (Exception e) {
-            // Καταγραφή του λάθους για να ξέρεις τι φταίει
             e.printStackTrace();
-            result.reject("error.global", "Σφάλμα κατά την αποθήκευση: " + e.getMessage());
+            result.reject("error.global", "Σφάλμα: " + e.getMessage());
             return "users/registration-form-employer";
         }
     }
-
 }

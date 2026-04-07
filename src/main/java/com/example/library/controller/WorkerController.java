@@ -34,7 +34,6 @@ public class WorkerController {
     private UserRepository userRepository;
 
 
-
     @PostMapping("/register")
     public String handleWorkerRegistration(@Valid @ModelAttribute("workerDto") WorkerRegistrationDTO dto,
                                            BindingResult result,

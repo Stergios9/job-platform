@@ -139,6 +139,13 @@
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:if="${infoMessage}" class="alert alert-info">
+  <p th:text="${infoMessage}"></p>
+</div>
+
+<div th:if="${errorMessage}" class="alert alert-danger">
+  <p th:text="${errorMessage}"></p>
+</div>
 
 <div class="role-wrapper">
   <div class="role-container">

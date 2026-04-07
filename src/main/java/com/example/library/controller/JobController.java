@@ -116,29 +116,35 @@ public class JobController {
     }
 
     @GetMapping("/explore/employer")
-    public String showEmployerJobs(Model model, Principal principal) {
-        // 1. Παίρνουμε το username του συνδεδεμένου εργοδότη
-        String username = principal.getName();
+    public String showEmployerJobs(Model model, Principal principal, RedirectAttributes redirectAttributes) {
 
-        // 2. Βρίσκουμε τον χρήστη και την εταιρεία του
+        String username = principal.getName();
         Optional<User> userOpt = userRepository.findByUsername(username);
 
-        if (userOpt.isEmpty() || userOpt.get().getCompany() == null) {
-            model.addAttribute("errorMessage", "Δεν βρέθηκε εταιρεία συνδεδεμένη με αυτόν τον λογαριασμό.");
-            return "jobs/employer-jobs";
+        if (userOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε ο χρήστης.");
+            return "redirect:/login"; // Ή όπου αλλού θέλεις να πάει αν δεν υπάρχει ο χρήστης
         }
 
-        Company company = userOpt.get().getCompany();
+        User user = userOpt.get();
+        if (user.getCompany() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε εταιρεία συνδεδεμένη με αυτόν τον λογαριασμό.");
+            // Ανακατεύθυνση στο choose-role με παράμετρο role
+            return "redirect:/login?role=employer";
+        }
 
-        // 3. Φιλτράρουμε τις θέσεις εργασίας της συγκεκριμένης εταιρείας
-        // Ελέγχουμε αν η συνδρομή είναι ενεργή
+        Company company = user.getCompany();
+
+        // Φιλτράρισμα θέσεων εργασίας
         List<JobPosition> employerJobs = company.getJobs().stream()
                 .filter(job -> company.getSubscription() != null &&
                         company.getSubscription().isActive())
                 .toList();
 
         if (employerJobs.isEmpty()) {
-            model.addAttribute("errorMessage", "Δεν έχετε δημοσιεύσει θέσεις εργασίας ή η συνδρομή σας δεν είναι ενεργή.");
+            redirectAttributes.addFlashAttribute("infoMessage", "Δεν έχετε δημοσιεύσει θέσεις εργασίας ή η συνδρομή σας δεν είναι ενεργή.");
+            // Ανακατεύθυνση στο choose-role με παράμετρο role
+            return "redirect:/login?role=employer";
         }
 
         model.addAttribute("employerJobs", employerJobs);

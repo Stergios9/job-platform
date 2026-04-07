@@ -89,9 +89,8 @@ public class UserController {
 
         // ΝΕΑ ΛΟΓΙΚΗ ΓΙΑ WORKER
         if ("ROLE_WORKER".equals(role)) {
-            WorkerRegistrationDTO workerDto = new WorkerRegistrationDTO();
-            workerDto.getUser().setRole("ROLE_WORKER"); // Προ-συμπλήρωση ρόλου
-            model.addAttribute("workerDto", workerDto);
+
+            model.addAttribute("workerDto", new WorkerRegistrationDTO());
             model.addAttribute("isEdit", false);
             return "users/registration-form-worker"; // Η νέα σου HTML φόρμα
         }

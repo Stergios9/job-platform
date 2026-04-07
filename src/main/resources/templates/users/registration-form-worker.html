@@ -121,20 +121,40 @@
         }
 
         .section-title {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            width: 100%;
             font-size: 1rem;
             font-weight: 700;
             color: #1A494D;
             margin: 25px 0 15px 0;
-            display: flex;
-            align-items: center;
+            font-size: large;
         }
 
-        .section-title::after {
+        /* Adds the line to the left */
+        .section-title::before {
             content: "";
             flex: 1;
             height: 1px;
             background: #dee2e6;
-            margin-left: 10px;
+            margin-right: 15px; /* Space between line and text */
+        }
+
+        /* Adds the line to the right */
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+
+            background: #dee2e6;
+            margin-left: 15px; /* Space between text and line */
+        }
+        .required-dot {
+            color: #d9534f; /* Ένα "μαλακό" κόκκινο που ταιριάζει σε φόρμες */
+            margin-left: 4px;
+            font-weight: bold;
+            font-size: x-large;
         }
 
         @media (max-width: 991px) {
@@ -158,31 +178,55 @@
 
             <input type="hidden" th:field="*{user.id}" />
 
-            <div class="section-title">Στοιχεία Λογαριασμού</div>
+            <div class="section-title"><b>Στοιχεία Λογαριασμού</b></div>
+
             <div class="mb-3">
-                <label class="form-label">Username-Email</label>
+                <label class="col-md-6 mb-3">
+                    <b>Username-Email</b> <span class="required-dot">*</span>
+                </label>
                 <input type="email" th:field="*{user.username}" class="form-control"
-                       th:readonly="${isEdit}" required />
+                       placeholder="π.χ. info@company.com" th:readonly="${isEdit}" required />
             </div>
 
-<!--            <div class="mb-3">-->
-<!--                <label class="form-label">Email</label>-->
-<!--                <input type="email" th:field="*{user.email}" class="form-control" required />-->
-<!--            </div>-->
+            <div class="col-md-6 mb-3" th:if="${!(isEdit ?: false)}">
+                <label><b>Κωδικός Πρόσβασης</b> <span class="required-dot">*</span> </label>
+                <input type="password"
+                       th:field="*{user.password}"
+                       class="form-control"
+                       placeholder="********"
+                       minlength="8"
+                       required />
+                <div class="text-danger" th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}"></div>
+            </div>
 
-            <div class="section-title">Απαραίτητα Έγγραφα</div>
+            <div class="col-md-12 mb-3">
+                <label><b>Πόλη (Έδρα χρήστη)</b></label>
+                <input type="text" th:field="*{city}" class="form-control" th:value="'Nigrita'" placeholder="π.χ. Αθήνα" />
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label><b>Περιγραφή θέσης <span class="required-dot">*</span></b></label>
+                <input type="text" th:field="*{profession}" class="form-control" placeholder="π.χ. Barman" required/>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label><b>Δεξιότητες (Προαιρετικά)</b></label>
+                <input type="text" th:field="*{bio}" class="form-control" placeholder="Περιέγραψε τον εαυτό σου" />
+            </div>
+
+            <div class="section-title"><b>Απαραίτητα Έγγραφα</b> <span class="required-dot">*</span></div>
             <div class="mb-3">
-                <label class="form-label">Πιστοποιητικό Υγείας (PDF/Image)</label>
-                <input type="file" th:field="*{healthCertificateFile}" class="form-control" accept=".pdf,image/*" />
+                <label class="form-label"><b>Πιστοποιητικό Υγείας (PDF/Image)</b> <span class="required-dot">*</span></label>
+                <input type="file" th:field="*{healthCertificateFile}" class="form-control" accept=".pdf,image/*" required/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Ταυτότητα / ARC (PDF/Image)</label>
-                <input type="file" th:field="*{identificationFile}" class="form-control" accept=".pdf,image/*" />
+                <label class="form-label"><b>Ταυτότητα / ARC (PDF/Image) </b><span class="required-dot">*</span></label>
+                <input type="file" th:field="*{identificationFile}" class="form-control" accept=".pdf,image/*" required/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Εικόνα Προφίλ</label> <input type="file" th:field="*{imageFile}" class="form-control" accept="image/*" />
+                <label class="form-label"><b>Εικόνα Προφίλ (Προαιρετικά)</b></label> <input type="file" th:field="*{imageFile}" placeholder="Προαιρετικά" class="form-control" accept="image/*" />
             </div>
 
             <button type="submit" class="btn btn-submit w-100" th:text="${isEdit} ? 'Ενημέρωση' : 'Εγγραφή'"></button>

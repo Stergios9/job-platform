@@ -128,6 +128,16 @@
             <p class="login-subtitle">Καλώς ορίσατε στην πύλη εργασίας σας</p>
         </div>
 
+        <div th:if="${errorMessage}" class="error-msg alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div th:if="${infoMessage}" class="alert alert-info" style="border-radius: 8px; font-size: 0.9rem; padding: 10px;">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <span th:text="${infoMessage}"></span>
+        </div>
+
         <div th:if="${param.error}" class="error-msg">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             Λάθος όνομα χρήστη ή κωδικός πρόσβασης.

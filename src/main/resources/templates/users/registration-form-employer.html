@@ -128,7 +128,7 @@
 
 <div class="registration-wrapper">
   <div class="registration-container">
-    <h2 th:text="${isEdit} ? 'Επεξεργασία Αγγελίας' : 'Δημιουργία Λογαριασμού Εργοδότη'">Δημιουργία Λογαριασμού Εργοδότη</h2>
+    <h2 th:text="${isEdit} ? 'Επεξεργασια Αγγελιας' : 'Δημιουργια Λογαριασμου Εργοδοτη'">Δημιουργία Λογαριασμού Εργοδότη</h2>
 
     <form th:action="${isEdit ? '/jobs/update' : '/company/register/employer'}"
           th:object="${registrationDto}" method="post"
@@ -144,7 +144,7 @@
         <div class="col-md-6 mb-3">
           <label>Email / Username</label>
           <input type="email" th:field="*{user.username}" class="form-control"
-                 placeholder="π.χ. info@company.com" th:readonly="${isEdit}" required />
+                  th:readonly="${isEdit}" required />
         </div>
 
 <!--        <div class="col-md-6 mb-3" th:if="${!isEdit}">-->
@@ -152,6 +152,7 @@
 <!--          <input autocomplete="new-password" type="password" th:field="*{user.password}"-->
 <!--                 class="form-control" placeholder="********" required />-->
 <!--        </div>-->
+
         <div class="col-md-6 mb-3" th:if="${!(isEdit ?: false)}">
           <label>Κωδικός Πρόσβασης</label>
           <input type="password"
@@ -162,10 +163,6 @@
                  required />
           <div class="text-danger" th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}"></div>
         </div>
-
-        <input type="hidden"
-               th:if="${isEdit ?: false}"
-               th:field="*{user.password}" />
 
         <div class="col-md-12 mb-3">
           <label>Πόλη (Έδρα χρήστη)</label>
