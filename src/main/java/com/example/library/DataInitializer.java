@@ -87,7 +87,7 @@ public class DataInitializer {
             // 6. Μετά σώζουμε το Job γιατί χρειάζεται το ID της ήδη σωσμένης Company
             JobPosition job2 = new JobPosition();
             job2.setTitle("Delivery");
-            job2.setCity("Salamanina");
+            job2.setCity("Salamina");
             job2.setHourlyRate(5.50);
             job2.setDescription("We are looking for a friendly and efficient waiter to deliver our products");
             job2.setImageUrl("delivery.jfif");

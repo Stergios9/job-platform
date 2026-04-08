@@ -1,8 +1,12 @@
 package com.example.library.controller;
 
 import com.example.library.dto.WorkerRegistrationDTO;
+import com.example.library.entity.JobApplication;
+import com.example.library.entity.JobPosition;
 import com.example.library.entity.User;
 import com.example.library.entity.WorkerProfile;
+import com.example.library.repository.JobApplicationRepository;
+import com.example.library.repository.JobRepository;
 import com.example.library.repository.UserRepository;
 import com.example.library.repository.WorkerProfileRepository;
 import com.example.library.service.FileUploadService;
@@ -18,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/worker")
@@ -32,7 +37,46 @@ public class WorkerController {
     private WorkerProfileRepository workerProfileRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
 
+
+    @PostMapping("/apply/{jobId}")
+    public String applyForJob(@PathVariable Long jobId, Principal principal, RedirectAttributes redirectAttributes) {
+
+        // 1. Βρίσκουμε τη θέση εργασίας
+        JobPosition job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + jobId));
+
+        // 2. Βρίσκουμε τον χρήστη που κάνει την αίτηση
+        // String username = principal.getName(); OR
+        User user = principal != null ? userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found")) : null;
+
+        WorkerProfile workerProfile = user != null ? user.getWorkerProfile() : null;
+        if (workerProfile == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Πρέπει να είστε συνδεδεμένος εργαζόμενος για να κάνετε αίτηση.");
+            return "redirect:/login";
+        }
+        boolean alreadyApplied = jobApplicationRepository.existsByWorkerProfileIdAndJobPositionId(jobId, workerProfile.getId());
+        if (alreadyApplied) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Έχετε ήδη υποβάλει αίτηση για αυτή τη θέση!");
+            return "redirect:/home";
+        }
+        // 4. Δημιουργία και αποθήκευση της αίτησης
+        JobApplication application = new JobApplication();
+        application.setWorkerProfile(workerProfile);
+        application.setJobPosition(job);
+        application.setStatus("PENDING");
+
+        jobApplicationRepository.save(application);
+
+        redirectAttributes.addFlashAttribute("infoMessage", "Η αίτησή σας υποβλήθηκε με επιτυχία στην εταιρεία " + job.getCompany().getName() + "!");
+        return "redirect:/home";
+
+    }
 
     @PostMapping("/register")
     public String handleWorkerRegistration(@Valid @ModelAttribute("workerDto") WorkerRegistrationDTO dto,

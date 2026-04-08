@@ -78,23 +78,19 @@ public class UserController {
     }
 
 
-    @GetMapping("/register/details")
-    public String showRegistrationForm(@RequestParam("role") String role, Model model) {
+    @GetMapping("/register/details/{role}")
+    public String showRegistrationForm(@PathVariable("role") String role, Model model) {
         if ("ROLE_EMPLOYER".equals(role)) {
 
             model.addAttribute("registrationDto", new EmployerRegistrationDTO());
             model.addAttribute("isEdit", false);
             return "users/registration-form-employer";
         }
-
-        // ΝΕΑ ΛΟΓΙΚΗ ΓΙΑ WORKER
         if ("ROLE_WORKER".equals(role)) {
-
             model.addAttribute("workerDto", new WorkerRegistrationDTO());
             model.addAttribute("isEdit", false);
             return "users/registration-form-worker"; // Η νέα σου HTML φόρμα
         }
-
         return "redirect:/user/signUp";
     }
 

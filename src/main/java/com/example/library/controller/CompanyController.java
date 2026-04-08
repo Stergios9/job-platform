@@ -2,10 +2,8 @@ package com.example.library.controller;
 
 
 import com.example.library.dto.EmployerRegistrationDTO;
-import com.example.library.entity.Company;
-import com.example.library.entity.JobPosition;
-import com.example.library.entity.Subscription;
-import com.example.library.entity.User;
+import com.example.library.entity.*;
+import com.example.library.repository.JobApplicationRepository;
 import com.example.library.repository.JobRepository;
 import com.example.library.repository.UserRepository;
 import com.example.library.service.CompanyService;
@@ -50,6 +48,10 @@ public class CompanyController {
 
     @Autowired
     private FileUploadService fileUploadService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
 
     @Transactional
     @PostMapping("/register/employer")
@@ -73,7 +75,7 @@ public class CompanyController {
             // 1. ΠΡΩΤΑ ΕΛΕΓΧΟΣ ΑΦΜ (Πριν κάνεις οτιδήποτε άλλο)
             if (companyService.existsByAfm(dto.getCompany().getAfm())) {
                 result.rejectValue("company.afm", "error.duplicate", "Το ΑΦΜ είναι ήδη εγγεγραμμένο!");
-                return "company/registration-form-employer";
+                return "users/registration-form-employer";
             }
             User user = dto.getUser();
             Company company = dto.getCompany();
@@ -108,5 +110,18 @@ public class CompanyController {
             result.reject("error.global", "Σφάλμα: " + e.getMessage());
             return "users/registration-form-employer";
         }
+    }
+
+    @GetMapping("/applications")
+    public String viewApplications(Principal principal, Model model) {
+        // Βρίσκουμε την εταιρεία του συνδεδεμένου εργοδότη
+        User user = userRepository.findByUsername(principal.getName()).get();
+        Company company = user.getCompany();
+
+        // Φέρνουμε όλες τις αιτήσεις που αφορούν τις θέσεις αυτής της εταιρείας
+        List<JobApplication> applications = jobApplicationRepository.findByJobPosition_Company(company);
+
+        model.addAttribute("applications", applications);
+        return "employer/applications-list";
     }
 }

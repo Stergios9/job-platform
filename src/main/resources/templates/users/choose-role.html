@@ -153,12 +153,12 @@
     <p class="subtitle">Επιλέξτε πώς θέλετε να ξεκινήσετε</p>
 
     <div class="d-grid gap-2">
-      <a th:href="@{/user/register/details(role='ROLE_WORKER')}" class="btn-role worker shadow-sm">
+      <a th:href="@{/user/register/details/{r}(r='ROLE_WORKER')}" class="btn-role worker shadow-sm">
         <div>🔍 Ψάχνω για δουλειά</div>
         <span class="role-desc">Βρείτε θέσεις ως σερβιτόρος, αποθηκάριος, οδηγός κ.α.</span>
       </a>
 
-      <a th:href="@{/user/register/details(role='ROLE_EMPLOYER')}" class="btn-role employer shadow-sm">
+      <a th:href="@{/user/register/details/{r}(r='ROLE_EMPLOYER')}" class="btn-role employer shadow-sm">
         <div>💼 Ψάχνω για υπάλληλο</div>
         <span class="role-desc">Δημοσιεύστε αγγελίες και βρείτε το κατάλληλο προσωπικό</span>
       </a>
