@@ -1,0 +1,11 @@
+1) DataInitializer(create users, companies...) --> CustomUserDetailsService(loadUserByUsername: create security user)
+                           ->HomeController(get current user from security context,find user in db from security use)...
+2) Postgres --> open terminal: "psql -h localhost -U crewnow_user -d crewnow_db" & password: "crewnow_pass"
+   Χρήσιμες εντολές:  1) \dt: Εμφάνιση όλων των πινάκων (tables)
+                      2) \d όνομα_πίνακα: Εμφάνιση της δομής ενός συγκεκριμένου πίνακα.
+                      3) SELECT * FROM job_applications;
+                      4) \q: Έξοδος από την Postgres και επιστροφή στο terminal.
+
+ ------------------------------------------- BUGS -------------------------------------------
+ 1) ΕΠΕΞΕΡΓΑΣΊΑ ΑΓΓΕΛΙΑΣ ΕΡΓΟΔΟΤΗ(/jobs/udate) --> Να αφαιρέσω την πόλη χρήστη. Επίσης, όταν κάνω update δε κάνει τίποτα
+    SOS -- > Άλλο επξεργασία αγγελίας και άλλο επξεργασία χρήστη. Να φτιάξω ξεχωριστό endpoint για επεξεργασία αγγελίας και ξεχωριστό για επεξεργασία χρήστη.

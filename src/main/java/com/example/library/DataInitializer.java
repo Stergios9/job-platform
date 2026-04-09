@@ -22,11 +22,12 @@ public class DataInitializer {
     public CommandLineRunner loadData(UserService userService,
                                       UserRepository userRepository,
                                       CompanyRepository companyRepository,
-                                      JobRepository jobRepository,
+                                      JobRepository jobRepository, JobApplicationRepository jobApplicationRepository,
                                       SubscriptionRepository subscriptionRepository,
                                       WorkerProfileRepository workerProfileRepository, CompanyService companyService) {
         return args -> {
             // 1. Καθαρισμός δεδομένων (Σωστή σειρά λόγω Foreign Keys)
+            jobApplicationRepository.deleteAll();
             jobRepository.deleteAll();
             subscriptionRepository.deleteAll();
             workerProfileRepository.deleteAll();
@@ -125,6 +126,9 @@ public class DataInitializer {
             // 2. Φτιάχνουμε το Profile
             WorkerProfile profile = new WorkerProfile();
             profile.setProfession("Waiter");
+            profile.setIdentificationPath("C:User/.../uploads/viografiko.pdf");
+            profile.setImageUrl("waiter.jfif");
+
 
             // 3. ΣΥΝΔΕΣΗ
             profile.setUser(workerUser);

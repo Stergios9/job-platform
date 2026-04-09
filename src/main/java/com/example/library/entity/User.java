@@ -30,9 +30,6 @@ public class User {
 
     private String city;
 
-//    @Column(nullable = false)
-//    private String email;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Company company;
 

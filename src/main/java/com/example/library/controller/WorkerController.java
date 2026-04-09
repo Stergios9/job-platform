@@ -60,9 +60,9 @@ public class WorkerController {
             redirectAttributes.addFlashAttribute("errorMessage", "Πρέπει να είστε συνδεδεμένος εργαζόμενος για να κάνετε αίτηση.");
             return "redirect:/login";
         }
-        boolean alreadyApplied = jobApplicationRepository.existsByWorkerProfileIdAndJobPositionId(jobId, workerProfile.getId());
+        boolean alreadyApplied = jobApplicationRepository.existsByWorkerProfileIdAndJobPositionId(workerProfile.getId(),jobId);
         if (alreadyApplied) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Έχετε ήδη υποβάλει αίτηση για αυτή τη θέση!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Έχετε ήδη υποβάλει αίτηση για αυτή τη θέση!\nΕπιλέξτε μία νέα θέση εργασίας ή αναμένετε να επικοινωνήσει η εταιρεία μαζί σας");
             return "redirect:/home";
         }
         // 4. Δημιουργία και αποθήκευση της αίτησης

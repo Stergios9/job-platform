@@ -13,4 +13,5 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     boolean existsByWorkerProfileIdAndJobPositionId(Long workerProfileId, Long jobPositionId);
 
     List<JobApplication> findByJobPosition_Company(Company company);
+
 }

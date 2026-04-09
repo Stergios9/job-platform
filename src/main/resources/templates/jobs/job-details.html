@@ -267,26 +267,36 @@
                 Περιγραφή...
             </div>
 
+            <div th:if="${role == 'ROLE_WORKER'}" class="d-flex justify-content-center w-100 my-4">
+                <form th:action="@{/worker/apply/{jobId}(jobId=${job.id})}" method="post">
+                    <button type="submit" class="btn btn-apply px-5 shadow-lg">
+                        Κάνε Αίτηση <i class="bi bi-send-fill ms-2"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div th:if="${role == 'ROLE_EMPLOYER'}">
+                <form th:action="@{/jobs/edit/{id}(id=${job.id})}"  method="post">
+                    <button type="submit" class="btn btn-apply px-5 shadow" STYLE="">
+                        Κάνε Αίτηση <i class="bi bi-send-fill ms-2"></i>
+                    </button>
+                </form>
+            </div>
+
+<!--            <div th:if="${role == 'ROLE_EMPLOYER'}">-->
+<!--                <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn btn-apply px-5 shadow" style="background-color: #2a6f75;">-->
+<!--                    Επεξεργασία <i class="bi bi-pencil-square ms-2"></i>-->
+<!--                </a>-->
+<!--            </div>-->
+
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 pt-3 border-top">
                 <a href="javascript:history.back()" class="btn-back-custom mb-3 mb-md-0">
                     <i class="bi bi-arrow-left-circle"></i> Επιστροφή
                 </a>
 
-                <div sec:authorize="hasRole('ROLE_WORKER')">
-                    <form th:action="@{/worker/apply/{jobId}(jobId=${job.id})}" method="post">
-                        <button type="submit" class="btn btn-apply px-5 shadow">
-                            Κάνε Αίτηση <i class="bi bi-send-fill ms-2"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <div sec:authorize="hasRole('ROLE_EMPLOYER')" th:if="${#authentication.name == job.company.user.username}">
-                    <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn btn-apply px-5 shadow" style="background-color: #2a6f75;">
-                        Επεξεργασία <i class="bi bi-pencil-square ms-2"></i>
-                    </a>
-                </div>
             </div>
         </div> </div> </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -34,7 +34,11 @@ public class JobController {
 
     @GetMapping("/explore")
     public String explore(Model model, Principal principal) {
-        // Φιλτράρουμε ώστε να βλέπουμε μόνο θέσεις από εταιρείες με ενεργή συνδρομή
+
+        User user = principal != null ? userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found")) : null;
+
+
         List<JobPosition> allJobs = jobRepository.findAll().stream()
                 .filter(job -> job.getCompany() != null &&
                         job.getCompany().getSubscription() != null &&
@@ -46,18 +50,22 @@ public class JobController {
             // Αντί για redirect, μένουμε στη σελίδα αλλά δείχνουμε το μήνυμα
             return "jobs/explore";
         }
-
         model.addAttribute("allJobs", allJobs);
         return "jobs/explore";
     }
 
     @GetMapping("/details/{id}")
-    public String showJobDetails(@PathVariable Long id, Model model) {
+    public String showJobDetails(@PathVariable Long id, Model model, Principal principal) {
+
+        User user = principal != null ? userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found")) : null;
+
+        String  role = user != null  ? user.getRole() : null;
         JobPosition job = jobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
 
         model.addAttribute("job", job);
-        // Πλέον έχουμε πρόσβαση και στα στοιχεία της εταιρείας μέσω του job.getCompany()
+        model.addAttribute("role", role);
         return "jobs/job-details";
     }
 
@@ -114,6 +122,7 @@ public class JobController {
 
         return "redirect:/jobs/explore/employer?success=updated";
     }
+
 
     @GetMapping("/explore/employer")
     public String showEmployerJobs(Model model, Principal principal, RedirectAttributes redirectAttributes) {
