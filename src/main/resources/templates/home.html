@@ -161,6 +161,12 @@
                 </button>
             </form>
 
+            <form th:action="@{/company/applications/{r}(r='ROLE_EMPLOYER')}" method="get">
+                <button type="submit" class="btn-action btn-employer-create">
+                    <i class="bi bi-plus-circle me-2"></i> Διαχείριση Αιτήσεων
+                </button>
+            </form>
+
             <form th:action="@{/user/register/details/{r}(r='ROLE_EMPLOYER')}" method="get">
                 <button type="submit" class="btn-action btn-employer-create">
                     <i class="bi bi-plus-circle me-2"></i> Δημιουργία Νέας Αγγελίας

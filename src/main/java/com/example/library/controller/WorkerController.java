@@ -9,8 +9,10 @@ import com.example.library.repository.JobApplicationRepository;
 import com.example.library.repository.JobRepository;
 import com.example.library.repository.UserRepository;
 import com.example.library.repository.WorkerProfileRepository;
+import com.example.library.service.EmailService;
 import com.example.library.service.FileUploadService;
 import com.example.library.service.WorkerService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,41 +43,61 @@ public class WorkerController {
     private JobRepository jobRepository;
     @Autowired
     private JobApplicationRepository jobApplicationRepository;
+    @Autowired
+    private EmailService emailService;
 
 
+    @Transactional // Ensures lazy-loaded fields are accessible
     @PostMapping("/apply/{jobId}")
     public String applyForJob(@PathVariable Long jobId, Principal principal, RedirectAttributes redirectAttributes) {
 
-        // 1. Βρίσκουμε τη θέση εργασίας
+        // 1. Find Job
         JobPosition job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + jobId));
 
-        // 2. Βρίσκουμε τον χρήστη που κάνει την αίτηση
-        // String username = principal.getName(); OR
-        User user = principal != null ? userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new IllegalArgumentException("User not found")) : null;
-
-        WorkerProfile workerProfile = user != null ? user.getWorkerProfile() : null;
-        if (workerProfile == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Πρέπει να είστε συνδεδεμένος εργαζόμενος για να κάνετε αίτηση.");
+        // 2. Find User/Worker
+        if (principal == null) {
             return "redirect:/login";
         }
-        boolean alreadyApplied = jobApplicationRepository.existsByWorkerProfileIdAndJobPositionId(workerProfile.getId(),jobId);
-        if (alreadyApplied) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Έχετε ήδη υποβάλει αίτηση για αυτή τη θέση!\nΕπιλέξτε μία νέα θέση εργασίας ή αναμένετε να επικοινωνήσει η εταιρεία μαζί σας");
+
+        User user = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        WorkerProfile workerProfile = user.getWorkerProfile();
+        if (workerProfile == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Πρέπει να είστε συνδεδεμένος εργαζόμενος.");
+            return "redirect:/login";
+        }
+
+        // 3. Check for existing application
+        if (jobApplicationRepository.existsByWorkerProfileIdAndJobPositionId(workerProfile.getId(), jobId)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Έχετε ήδη υποβάλει αίτηση!");
             return "redirect:/home";
         }
-        // 4. Δημιουργία και αποθήκευση της αίτησης
+
+        // 4. Save Application
         JobApplication application = new JobApplication();
         application.setWorkerProfile(workerProfile);
         application.setJobPosition(job);
         application.setStatus("PENDING");
+        application = jobApplicationRepository.save(application); // Re-assign to get the generated ID
 
-        jobApplicationRepository.save(application);
+        // 5. Safe Email Sending
+        try {
+            if (job.getCompany() != null && job.getCompany().getUser() != null) {
+                String employerEmail = job.getCompany().getUser().getUsername();
+                String workerUsername = user.getUsername();
 
-        redirectAttributes.addFlashAttribute("infoMessage", "Η αίτησή σας υποβλήθηκε με επιτυχία στην εταιρεία " + job.getCompany().getName() + "!");
+                emailService.sendVerificationRequest(employerEmail, workerUsername, application.getId());
+            }
+        } catch (Exception e) {
+            // Log the error but don't stop the user experience
+            // because the application is already saved in the DB.
+            System.err.println("Email failed to send: " + e.getMessage());
+        }
+
+        redirectAttributes.addFlashAttribute("infoMessage", "Η αίτησή σας υποβλήθηκε με επιτυχία!");
         return "redirect:/home";
-
     }
 
     @PostMapping("/register")

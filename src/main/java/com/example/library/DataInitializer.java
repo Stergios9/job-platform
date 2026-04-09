@@ -37,7 +37,7 @@ public class DataInitializer {
             // 1. Δημιουργία User (Απλό αντικείμενο, ΟΧΙ save ακόμα)
             // 1. Φτιάχνουμε τον User (ΜΟΝΟ στη μνήμη)
             User boss1 = new User();
-            boss1.setUsername("boss1@gmail.com");
+            boss1.setUsername("tselios1990@gmail.com");
             boss1.setPassword(passwordEncoder.encode("12345678")); // Χειροκίνητο encode
             boss1.setRole("ROLE_EMPLOYER");
             boss1.setCity("Athens");
@@ -118,7 +118,7 @@ public class DataInitializer {
 
             // 1. Φτιάχνουμε τον User
             User workerUser = new User();
-            workerUser.setUsername("giannis@hotmail.com");
+            workerUser.setUsername("tselios9@hotmail.com");
             workerUser.setPassword(passwordEncoder.encode("12435678"));
             workerUser.setRole("ROLE_WORKER");
             workerUser.setCity("Nigrita");

@@ -6,6 +6,7 @@ import com.example.library.entity.*;
 import com.example.library.repository.JobApplicationRepository;
 import com.example.library.repository.JobRepository;
 import com.example.library.repository.UserRepository;
+import com.example.library.repository.WorkerProfileRepository;
 import com.example.library.service.CompanyService;
 import com.example.library.service.FileUploadService;
 import com.example.library.service.UserService;
@@ -17,10 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -38,7 +37,7 @@ public class CompanyController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserService userService;
+    private WorkerProfileRepository workerRepository;
 
     @Autowired
     private JobRepository jobRepository;
@@ -52,6 +51,23 @@ public class CompanyController {
     private UserRepository userRepository;
     @Autowired
     private JobApplicationRepository jobApplicationRepository;
+
+    @PostMapping("/verify-worker")
+    @Transactional
+    public String verifyWorker(@RequestParam Long workerId, @RequestParam Long applicationId) {
+        // 1. Επικύρωση του προφίλ του εργαζόμενου γενικά
+        WorkerProfile worker = workerRepository.findById(workerId).orElseThrow();
+        worker.setProfileVerified(true);
+
+        // 2. Ενημέρωση της συγκεκριμένης αίτησης
+        JobApplication app = jobApplicationRepository.findById(applicationId).orElseThrow();
+        app.setStatus("ACCEPTED");
+
+        workerRepository.save(worker);
+        jobApplicationRepository.save(app);
+
+        return "redirect:/company/dashboard?success=verified";
+    }
 
     @Transactional
     @PostMapping("/register/employer")
@@ -112,16 +128,36 @@ public class CompanyController {
         }
     }
 
-    @GetMapping("/applications")
-    public String viewApplications(Principal principal, Model model) {
+    @GetMapping("/applications/{role}")
+    public String viewApplications(@PathVariable("role") String role,
+                                   Principal principal, RedirectAttributes redirectAttributes,
+                                   Model model) {
         // Βρίσκουμε την εταιρεία του συνδεδεμένου εργοδότη
         User user = userRepository.findByUsername(principal.getName()).get();
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε ο χρήστης.");
+            return "redirect:/login";
+        }
+        if (!user.getRole().equals("ROLE_EMPLOYER")) {
+            return "redirect:/error?error=unauthorized";
+        }
+        if (user.getCompany() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε εταιρεία συνδεδεμένη με αυτόν τον λογαριασμό.");
+            return "redirect:/login?role=employer";
+        }
         Company company = user.getCompany();
-
+        if (company== null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε εταιρεία συνδεδεμένη με αυτόν τον λογαριασμό.");
+            return "redirect:/login?role=employer";
+        }
         // Φέρνουμε όλες τις αιτήσεις που αφορούν τις θέσεις αυτής της εταιρείας
         List<JobApplication> applications = jobApplicationRepository.findByJobPosition_Company(company);
+        if(applications.isEmpty()){
+            redirectAttributes.addFlashAttribute("infoMessage", "Δεν υπάρχουν αιτήσεις για τις θέσεις σας αυτή τη στιγμή.");
+            return "redirect:/login?role=employer";
+        }
 
         model.addAttribute("applications", applications);
-        return "employer/applications-list";
+        return "employers/applications-list";
     }
 }
