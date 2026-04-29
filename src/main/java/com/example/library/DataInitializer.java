@@ -120,7 +120,7 @@ public class DataInitializer {
             company3.setName("Il Toto");
             company3.setAfm("222222233");
             companyService.createSubscription(company3);
-            company3.setCertificatePath("C:User/.../uploads/viografiko2.pdf");
+            company3.setCertificatePath("C:/0User/uploads/viografiko2.pdf");
 
             company3.setUser(boss3);
             boss3.setCompany(company3);
@@ -138,6 +138,11 @@ public class DataInitializer {
 
             // 2. Φτιάχνουμε το Profile
             WorkerProfile profile = new WorkerProfile();
+            profile.setProfession("Waiter");
+            profile.setIdentificationPath("C:/Users/uploads/certificates/bebaiosi.pdf");
+//            profile.setBio();
+            profile.setProfileVerified(true);
+            profile.setImageUrl("waiter.jfif");
             profile.setProfession("Storeman");
             profile.setIdentificationPath("C:User/.../uploads/viografiko.pdf");
             profile.setImageUrl("storeman.jpeg");
