@@ -20,6 +20,8 @@ public class LoginController {
     public String showLoginPage(Model model) {
 
         model.addAttribute("user", new User());
+
+
         return "login"; // Returns login.html
     }
 }

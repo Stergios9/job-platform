@@ -17,7 +17,6 @@ public class WorkerProfile {
     private boolean isProfileVerified = false;
     private String healthCertificatePath; // PDF
     private String identificationPath;     // Ταυτότητα/ARC
-    // Εδώ μπορείς να προσθέσεις και άλλα στοιχεία μόνο για workers
     private String profession; // π.χ. Μπάρμαν
     private String bio;
 

@@ -185,7 +185,9 @@
         </div>
         <div class="mb-3">
           <label>Άδεια Λειτουργίας Επιχείρησης (PDF/Image)</label>
-          <input type="file" th:field="*{certificateFile}" class="form-control" accept=".pdf,image/*" required />
+          <input type="file" th:field="*{certificateFile}"
+                 class="form-control" accept=".pdf,image/*"
+                 th:required="${!isEdit}" />
         </div>
       </div>
 
@@ -229,12 +231,6 @@
       </div>
 
       <input type="hidden" th:if="${isEdit}" th:field="*{jobPosition.imageUrl}" />
-
-<!--      Αν δημιουργείται πρόβλημα στο binding του imageFile, μπορεί να αφαιρεθεί το th:field και να χρησιμοποιηθεί απλά name="imageFile" όπως παρακάτω:-->
-<!--      <div class="mb-3">-->
-<!--        <label>Εικόνα Επιχείρησης/Αγγελίας:</label>-->
-<!--        <input type="file" name="imageFile" class="form-control" accept="image/*">-->
-<!--      </div>-->
 
       <button type="submit" class="btn btn-submit shadow-sm"
               th:text="${isEdit} ? 'Αποθήκευση Αλλαγών' : 'Δημιουργία Λογαριασμού & Ανάρτηση'">
