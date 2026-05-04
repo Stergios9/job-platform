@@ -28,6 +28,8 @@ public class User {
     @Column(nullable = false)
     private String role; // Π.χ. "ROLE_EMPLOYER" ή "ROLE_WORKER"
 
+    private String nickName;
+
     private String city;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -40,13 +42,15 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String username, String password, String role, String city, String email, Company company) {
+    public User(Long id, String username, String password, String role, String nickName, String city, Company company, WorkerProfile workerProfile) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.nickName = nickName;
         this.city = city;
         this.company = company;
+        this.workerProfile = workerProfile;
     }
 
     public Long getId() {
@@ -73,7 +77,6 @@ public class User {
         this.password = password;
     }
 
-
     public String getRole() {
         return role;
     }
@@ -82,6 +85,12 @@ public class User {
         this.role = role;
     }
 
+    public String getNickName() {
+        return nickName;
+    }
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
     public String getCity() {
         return city;
     }

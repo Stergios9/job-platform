@@ -16,24 +16,16 @@ public class HomeController {
     private UserRepository userRepository;
 
     @GetMapping("/home")
-    public String homePage(
-            @RequestParam(value = "role", required = false) String role,
-            Model model,
-            Principal principal) {
+    public String homePage(Model model,
+                            Principal principal) {
 
         String username = principal.getName();
         User dbUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Αν η παράμετρος role υπάρχει στο URL, την προσθέτουμε στο μοντέλο
-        if (role != null) {
-            model.addAttribute("selectedRole", role);
-        }
+        model.addAttribute("user", dbUser);
 
-        model.addAttribute("username", dbUser.getUsername());
-        model.addAttribute("role", dbUser.getRole());
-
-        // Έλεγχος Verification
+       // Έλεγχος Verification
         boolean isVerified = false;
         if ("ROLE_EMPLOYER".equals(dbUser.getRole()) && dbUser.getCompany() != null) {
             model.addAttribute("isEmployer", true); // Καλύτερα true/false εδώ

@@ -37,10 +37,12 @@ public class DataInitializer {
             // 1. Δημιουργία User (Απλό αντικείμενο, ΟΧΙ save ακόμα)
             // 1. Φτιάχνουμε τον User (ΜΟΝΟ στη μνήμη)
             User boss1 = new User();
-            boss1.setUsername("tselios1990@gmail.com");
+            boss1.setUsername("boss1@gmail.com");
             boss1.setPassword(passwordEncoder.encode("12345678")); // Χειροκίνητο encode
             boss1.setRole("ROLE_EMPLOYER");
             boss1.setCity("Athens");
+            boss1.setNickName("Boss1");
+
 
             Company company1 = new Company();
             company1.setName("Acropolis Group");
@@ -59,11 +61,20 @@ public class DataInitializer {
             job1.setCity("Athens");
             job1.setHourlyRate(8.50);
             job1.setDescription("We are looking for a friendly and efficient waiter to join our team at Acropolis Group. The ideal candidate will have excellent communication skills, a positive attitude, and the ability to work in a fast-paced environment. Responsibilities include taking orders, serving food and beverages, and ensuring customer satisfaction.");
-            job1.setImageUrl("waiter.jfif");
+            job1.setImageUrl("restaurant.jfif");
 
             job1.setCompany(company1);
-            // ... λοιπά πεδία
             jobRepository.save(job1);
+
+            JobPosition comp1Job2 = new JobPosition();
+            comp1Job2.setTitle("Bartender");
+            comp1Job2.setCity("Rhodes");
+            comp1Job2.setHourlyRate(9.50);
+            comp1Job2.setDescription("We are looking for a friendly and efficient waiter to join our team at Acropolis Group. The ideal candidate will have excellent communication skills, a positive attitude, and the ability to work in a fast-paced environment. Responsibilities include taking orders, serving food and beverages, and ensuring customer satisfaction.");
+            comp1Job2.setImageUrl("barman.png");
+
+            comp1Job2.setCompany(company1);
+            jobRepository.save(comp1Job2);
 // ****************************************************************************** //
 
 //             1. Δημιουργία 2ou Εργοδότη
@@ -72,7 +83,7 @@ public class DataInitializer {
             boss2.setPassword(passwordEncoder.encode("87654321")); // Χειροκίνητο encode
             boss2.setRole("ROLE_EMPLOYER");
             boss2.setCity("Athens");
-
+            boss2.setNickName("Boss2");
 
             Company company2 = new Company();
             company2.setName("Coffee Lab");
@@ -103,6 +114,7 @@ public class DataInitializer {
             boss3.setPassword(passwordEncoder.encode("87564321")); // Χειροκίνητο encode
             boss3.setRole("ROLE_EMPLOYER");
             boss3.setCity("Athens");
+            boss3.setNickName("Boss3");
 
             Company company3 = new Company();
             company3.setName("Il Toto");
@@ -122,6 +134,7 @@ public class DataInitializer {
             workerUser.setPassword(passwordEncoder.encode("12435678"));
             workerUser.setRole("ROLE_WORKER");
             workerUser.setCity("Nigrita");
+            workerUser.setNickName("Worker1");
 
             // 2. Φτιάχνουμε το Profile
             WorkerProfile profile = new WorkerProfile();
@@ -130,6 +143,9 @@ public class DataInitializer {
 //            profile.setBio();
             profile.setProfileVerified(true);
             profile.setImageUrl("waiter.jfif");
+            profile.setProfession("Storeman");
+            profile.setIdentificationPath("C:User/.../uploads/viografiko.pdf");
+            profile.setImageUrl("storeman.jpeg");
 
 
             // 3. ΣΥΝΔΕΣΗ
