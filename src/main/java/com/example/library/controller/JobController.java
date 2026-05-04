@@ -191,22 +191,24 @@ public class JobController {
     @GetMapping("/explore/employer")
     public String showEmployerJobs(Model model, Principal principal, RedirectAttributes redirectAttributes) {
 
+        // 1. Get the username from the security context
         String username = principal.getName();
-        Optional<User> userOpt = userRepository.findByUsername(username);
+//        Optional<User> userOpt = userRepository.findByUsername(username);
 
-        if (userOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε ο χρήστης.");
-            return "redirect:/login"; // Ή όπου αλλού θέλεις να πάει αν δεν υπάρχει ο χρήστης
-        }
+        // 2. Fetch the User entity (The "User" is now carried by the DB session)
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userOpt.get();
-        if (user.getCompany() == null) {
+
+        Company company = user.getCompany();
+
+        if (company == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε εταιρεία συνδεδεμένη με αυτόν τον λογαριασμό.");
             // Ανακατεύθυνση στο choose-role με παράμετρο role
             return "redirect:/login?role=employer";
         }
 
-        Company company = user.getCompany();
+
 
         // Φιλτράρισμα θέσεων εργασίας
         List<JobPosition> employerJobs = company.getJobs().stream()

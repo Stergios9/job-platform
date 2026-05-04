@@ -152,6 +152,11 @@
                     <i class="bi bi-search me-2"></i> Αναζήτηση Θέσεων Εργασίας
                 </button>
             </form>
+<!--            <form th:action="@{/jobs/explore/employer/{r}(r='ROLE_EMPLOYER')}" method="get">-->
+<!--                <button type="submit" class="btn-action btn-employer-view">-->
+<!--                    <i class="bi bi-briefcase me-2"></i> Δες τις Αιτήσεις σου-->
+<!--                </button>-->
+<!--            </form>-->
         </div>
 
         <div th:if="${isEmployer}" class="d-grid gap-2">

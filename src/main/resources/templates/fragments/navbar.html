@@ -102,8 +102,8 @@
                 <i class="bi bi-gear-fill me-2 text-secondary"></i> Ρυθμίσεις Λογαριασμού
               </a>
             </li>
-            <li sec:authorize="hasRole('ROLE_WORKER')">
-              <a class="dropdown-item" th:href="@{/worker/profile}">
+            <li>
+              <a class="dropdown-item" th:href="@{/user/profile}">
                 <i class="bi bi-person-vcard-fill me-2 text-secondary"></i> Το Προφίλ μου
               </a>
             </li>
