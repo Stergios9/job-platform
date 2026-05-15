@@ -1,8 +1,5 @@
-<!DOCTYPE html>
-<html lang="el" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<body>
-
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark custom-navbar">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark custom-navbar"
+     xmlns:sec="http://www.w3.org/1999/xhtml">
   <div class="container">
     <a class="navbar-brand brand-logo" th:href="@{/home}">
       CREW<span style="color: #52c41a; font-weight: 300;">NOW</span>
@@ -63,7 +60,4 @@
   </div>
 </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>-->
