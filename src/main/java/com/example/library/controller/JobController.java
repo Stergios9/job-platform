@@ -75,8 +75,11 @@ public class JobController {
                             Principal principal,
                             Model model) {
 
-        // Τώρα το 'result' αναγνωρίζεται κανονικά
-        if (result.hasErrors()) {
+        // Ελέγχουμε αν υπάρχουν σφάλματα ΠΟΥ ΔΕΝ ΑΦΟΡΟΥΝ τον κωδικό
+        boolean hasOtherErrors = result.getFieldErrors().stream()
+                .anyMatch(error -> !error.getField().equals("user.password"));
+
+        if (hasOtherErrors) {
             model.addAttribute("isEdit", true);
             return "users/registration-form-employer";
         }
@@ -89,6 +92,7 @@ public class JobController {
         if (!existingJob.getCompany().getUser().getUsername().equals(principal.getName())) {
             return "redirect:/user/explore/employer?error=unauthorized";
         }
+
         // 3. Ενημέρωση των πεδίων του JobPosition
         existingJob.setTitle(dto.getJobPosition().getTitle());
         existingJob.setHourlyRate(dto.getJobPosition().getHourlyRate());
@@ -122,27 +126,89 @@ public class JobController {
 
         return "redirect:/jobs/explore/employer?success=updated";
     }
+    @GetMapping("/edit/{id}")
+    public String editJob(@PathVariable("id") Long jobId, Model model, Principal principal) {
+        // 1. Φέρνουμε το Job και προκαλούμε το φόρτωμα της Company (Eager fetch μέσω κώδικα)
+        JobPosition job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + jobId));
+
+        // 2. Έλεγχος Ασφαλείας
+        String currentUsername = principal.getName();
+        Company company = job.getCompany(); // Αυτή είναι η εταιρεία της αγγελίας
+
+        if (!company.getUser().getUsername().equals(currentUsername)) {
+            return "redirect:/jobs/explore/employer?error=unauthorized";
+        }
+
+        // 3. Δημιουργία και γέμισμα του DTO
+        EmployerRegistrationDTO dto = new EmployerRegistrationDTO();
+
+        // ΣΗΜΑΝΤΙΚΟ: Παίρνουμε τον User απευθείας από την εταιρεία της αγγελίας
+        User owner = company.getUser();
+
+        dto.setUser(owner);
+        dto.setCompany(company);
+        dto.setJobPosition(job);
+
+        // Password: Το κρατάμε για να μην χτυπήσει το @NotBlank στο submit
+        // (αν και στο update θα το παρακάμψουμε όπως είπαμε πριν)
+        dto.getUser().setPassword(owner.getPassword());
+
+        model.addAttribute("registrationDto", dto);
+        model.addAttribute("isEdit", true);
+        return "users/registration-form-employer";
+    }
+
+
+//    @GetMapping("/edit/{id}")
+//    public String editJob(@PathVariable("id") Long jobId, Model model, Principal principal) {
+//        // 1. Βρίσκουμε την αγγελία βάσει ID
+//        JobPosition job = jobRepository.findById(jobId)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + jobId));
+//
+//        // 2. Έλεγχος ασφαλείας: Είναι αυτός ο χρήστης ο ιδιοκτήτης της αγγελίας;
+//        User existingUser = userRepository.findByUsername(principal.getName()).get();
+//        String username = principal.getName();
+//        if (!job.getCompany().getUser().getUsername().equals(username)) {
+//            return "redirect:/jobs/explore/employer?error=unauthorized";
+//        }
+//
+//        // 3. Δημιουργούμε το DTO και το γεμίζουμε με τα υπάρχοντα δεδομένα
+//        EmployerRegistrationDTO dto = new EmployerRegistrationDTO();
+//        dto.setUser(job.getCompany().getUser());
+//        dto.getUser().setPassword(existingUser.getPassword());
+////        dto.setCompany(job.getCompany());
+//        dto.setCompany(existingUser.getCompany());
+//        dto.setJobPosition(job);
+//
+//        model.addAttribute("registrationDto", dto);
+//        model.addAttribute("isEdit", true); // Flag για να ξέρει η φόρμα ότι κάνουμε edit
+//
+//        return "users/registration-form-employer";
+//    }
 
 
     @GetMapping("/explore/employer")
     public String showEmployerJobs(Model model, Principal principal, RedirectAttributes redirectAttributes) {
 
+        // 1. Get the username from the security context
         String username = principal.getName();
-        Optional<User> userOpt = userRepository.findByUsername(username);
+//        Optional<User> userOpt = userRepository.findByUsername(username);
 
-        if (userOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε ο χρήστης.");
-            return "redirect:/login"; // Ή όπου αλλού θέλεις να πάει αν δεν υπάρχει ο χρήστης
-        }
+        // 2. Fetch the User entity (The "User" is now carried by the DB session)
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userOpt.get();
-        if (user.getCompany() == null) {
+
+        Company company = user.getCompany();
+
+        if (company == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε εταιρεία συνδεδεμένη με αυτόν τον λογαριασμό.");
             // Ανακατεύθυνση στο choose-role με παράμετρο role
             return "redirect:/login?role=employer";
         }
 
-        Company company = user.getCompany();
+
 
         // Φιλτράρισμα θέσεων εργασίας
         List<JobPosition> employerJobs = company.getJobs().stream()
@@ -160,27 +226,4 @@ public class JobController {
         return "jobs/employer-jobs";
     }
 
-    @GetMapping("/edit/{id}")
-    public String editJob(@PathVariable("id") Long jobId, Model model, Principal principal) {
-        // 1. Βρίσκουμε την αγγελία βάσει ID
-        JobPosition job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + jobId));
-
-        // 2. Έλεγχος ασφαλείας: Είναι αυτός ο χρήστης ο ιδιοκτήτης της αγγελίας;
-        String username = principal.getName();
-        if (!job.getCompany().getUser().getUsername().equals(username)) {
-            return "redirect:/user/explore/employer?error=unauthorized";
-        }
-
-        // 3. Δημιουργούμε το DTO και το γεμίζουμε με τα υπάρχοντα δεδομένα
-        EmployerRegistrationDTO dto = new EmployerRegistrationDTO();
-        dto.setUser(job.getCompany().getUser());
-        dto.setCompany(job.getCompany());
-        dto.setJobPosition(job);
-
-        model.addAttribute("registrationDto", dto);
-        model.addAttribute("isEdit", true); // Flag για να ξέρει η φόρμα ότι κάνουμε edit
-
-        return "users/registration-form-employer";
-    }
 }

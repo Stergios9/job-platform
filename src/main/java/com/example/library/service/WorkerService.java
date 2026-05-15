@@ -1,8 +1,6 @@
 package com.example.library.service;
 
-import com.example.library.dto.EmployerRegistrationDTO;
 import com.example.library.dto.WorkerRegistrationDTO;
-import com.example.library.entity.JobPosition;
 import com.example.library.entity.User;
 import com.example.library.entity.WorkerProfile;
 import com.example.library.repository.JobRepository;
@@ -13,12 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.io.IOException;
-import java.security.Principal;
 
 @Service
 @RequiredArgsConstructor // Lombok ή φτιάξε Constructor για τα Repositories

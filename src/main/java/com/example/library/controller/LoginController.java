@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class LoginController {
 
-
     @GetMapping("/login")
-    public String returnLoginPage(Model model) {
+    public String returnLoginPage(@RequestParam(value = "role", required = false) String role, Model model) {
 
         model.addAttribute("user", new User());
         return "login"; // Returns login.html
     }
-
     @GetMapping("/")
     public String showLoginPage(Model model) {
 
         model.addAttribute("user", new User());
+
+
         return "login"; // Returns login.html
     }
 }
