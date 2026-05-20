@@ -16,6 +16,20 @@ import java.time.LocalDate;
 public class DataInitializer {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+    @Autowired
+    private WorkerProfileRepository workerProfileRepository;
+    @Autowired
+    private CompanyService companyService;
 
 
     @Bean
@@ -61,20 +75,23 @@ public class DataInitializer {
             job1.setCity("Athens");
             job1.setHourlyRate(8.50);
             job1.setDescription("We are looking for a friendly and efficient waiter to join our team at Acropolis Group. The ideal candidate will have excellent communication skills, a positive attitude, and the ability to work in a fast-paced environment. Responsibilities include taking orders, serving food and beverages, and ensuring customer satisfaction.");
-            job1.setImageUrl("restaurant.jfif");
+            job1.setImageUrl("apothikarios.png");
 
             job1.setCompany(company1);
             jobRepository.save(job1);
+            company1.addJob(job1);
 
             JobPosition comp1Job2 = new JobPosition();
             comp1Job2.setTitle("Bartender");
             comp1Job2.setCity("Rhodes");
             comp1Job2.setHourlyRate(9.50);
             comp1Job2.setDescription("We are looking for a friendly and efficient waiter to join our team at Acropolis Group. The ideal candidate will have excellent communication skills, a positive attitude, and the ability to work in a fast-paced environment. Responsibilities include taking orders, serving food and beverages, and ensuring customer satisfaction.");
-            comp1Job2.setImageUrl("barman.png");
+            comp1Job2.setImageUrl("storeman.jpeg");
 
             comp1Job2.setCompany(company1);
             jobRepository.save(comp1Job2);
+            company1.addJob(comp1Job2);
+
 // ****************************************************************************** //
 
 //             1. Δημιουργία 2ou Εργοδότη
@@ -102,11 +119,13 @@ public class DataInitializer {
             job2.setCity("Salamina");
             job2.setHourlyRate(5.50);
             job2.setDescription("We are looking for a friendly and efficient waiter to deliver our products");
-            job2.setImageUrl("delivery.jfif");
+            job2.setImageUrl("ice-Cream.png");
 
             job2.setCompany(company2);
             // ... λοιπά πεδία
             jobRepository.save(job2);
+            company2.addJob(job2);
+
 
 
             User boss3 = new User();

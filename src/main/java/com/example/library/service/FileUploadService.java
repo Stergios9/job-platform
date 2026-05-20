@@ -41,7 +41,8 @@ public class FileUploadService {
     }
 
     // Η κεντρική ρίζα των uploads
-    private final String BASE_UPLOAD_DIR = "uploads/";
+    private  final String BASE_UPLOAD_DIR ="uploads/";
+
 
     public String saveFile(MultipartFile file, String subDirectory) throws IOException {
         if (file == null || file.isEmpty()) {
@@ -64,5 +65,11 @@ public class FileUploadService {
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         return uniqueFileName; // Επιστρέφουμε το όνομα για αποθήκευση στη DB
+    }
+
+    public void replaceFile(String oldFile, MultipartFile newFile, String folder) throws IOException {
+        if (oldFile != null) {
+            Files.deleteIfExists(Paths.get("uploads/" + folder + "/" + oldFile));
+        }
     }
 }

@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
+
 
 @Controller
 @RequestMapping("/jobs")
@@ -73,7 +75,10 @@ public class JobController {
     public String updateJob(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
                             BindingResult result,  // <--- ΑΥΤΟ ΕΛΕΙΠΕ
                             Principal principal,
-                            Model model) {
+                            Model model) throws IOException {
+
+        User existingUser = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Ελέγχουμε αν υπάρχουν σφάλματα ΠΟΥ ΔΕΝ ΑΦΟΡΟΥΝ τον κωδικό
         boolean hasOtherErrors = result.getFieldErrors().stream()
@@ -93,41 +98,31 @@ public class JobController {
             return "redirect:/user/explore/employer?error=unauthorized";
         }
 
-        // 3. Ενημέρωση των πεδίων του JobPosition
-        existingJob.setTitle(dto.getJobPosition().getTitle());
-        existingJob.setHourlyRate(dto.getJobPosition().getHourlyRate());
-        existingJob.setDescription(dto.getJobPosition().getDescription());
-        existingJob.setCity(dto.getJobPosition().getCity());
-        // Αν έχεις και imageUrl, το ενημερώνεις κι αυτό αν άλλαξε
-        // existingJob.setImageUrl(dto.getJobPosition().getImageUrl());
+        MultipartFile imageFile = dto.getImageFile();
+        if (imageFile != null && !imageFile.isEmpty()) {
 
-        // 4. Ενημέρωση των πεδίων της Εταιρείας (αν επιτρέπεις αλλαγές)
-        Company existingCompany = existingJob.getCompany();
-        existingCompany.setName(dto.getCompany().getName());
-        // Το ΑΦΜ συνήθως δεν το αλλάζουμε, αλλά αν χρειάζεται:
-        // existingCompany.setAfm(dto.getCompany().getAfm());
+            fileUploadService.replaceFile(existingJob.getImageUrl(), imageFile, "images");
 
-        // 5. Ενημέρωση του User (π.χ. την πόλη του χρήστη)
-        User existingUser = existingCompany.getUser();
-        existingUser.setCity(dto.getUser().getCity());
+//            String filename = fileUploadService.saveFile(imageFile, "images");
 
-        // Χειρισμός νέας εικόνας (αν ανέβηκε)
-        if (dto.getImageFile() != null && !dto.getImageFile().isEmpty()) {
-            try {
-                String fileName = fileUploadService.saveImage(dto.getImageFile());
-                existingJob.setImageUrl(fileName);
-            } catch (IOException e) {
-                result.reject("error.upload", "Αποτυχία ανεβάσματος εικόνας");
-                return "users/registration-form-employer";
-            }
+            String filename = fileUploadService.saveFile(imageFile, "images");
+            existingJob.setImageUrl(filename);
         }
+
         // Λόγω CascadeType.ALL, σώζοντας το Job ή την Company, ενημερώνονται και τα υπόλοιπα
         jobRepository.save(existingJob);
 
+
+        model.addAttribute("registrationDto", dto);
         return "redirect:/jobs/explore/employer?success=updated";
     }
+
     @GetMapping("/edit/{id}")
     public String editJob(@PathVariable("id") Long jobId, Model model, Principal principal) {
+
+        User existingUser = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         // 1. Φέρνουμε το Job και προκαλούμε το φόρτωμα της Company (Eager fetch μέσω κώδικα)
         JobPosition job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + jobId));
@@ -152,40 +147,12 @@ public class JobController {
 
         // Password: Το κρατάμε για να μην χτυπήσει το @NotBlank στο submit
         // (αν και στο update θα το παρακάμψουμε όπως είπαμε πριν)
-        dto.getUser().setPassword(owner.getPassword());
+//        dto.getUser().setPassword(owner.getPassword());
 
         model.addAttribute("registrationDto", dto);
         model.addAttribute("isEdit", true);
         return "users/registration-form-employer";
     }
-
-
-//    @GetMapping("/edit/{id}")
-//    public String editJob(@PathVariable("id") Long jobId, Model model, Principal principal) {
-//        // 1. Βρίσκουμε την αγγελία βάσει ID
-//        JobPosition job = jobRepository.findById(jobId)
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + jobId));
-//
-//        // 2. Έλεγχος ασφαλείας: Είναι αυτός ο χρήστης ο ιδιοκτήτης της αγγελίας;
-//        User existingUser = userRepository.findByUsername(principal.getName()).get();
-//        String username = principal.getName();
-//        if (!job.getCompany().getUser().getUsername().equals(username)) {
-//            return "redirect:/jobs/explore/employer?error=unauthorized";
-//        }
-//
-//        // 3. Δημιουργούμε το DTO και το γεμίζουμε με τα υπάρχοντα δεδομένα
-//        EmployerRegistrationDTO dto = new EmployerRegistrationDTO();
-//        dto.setUser(job.getCompany().getUser());
-//        dto.getUser().setPassword(existingUser.getPassword());
-////        dto.setCompany(job.getCompany());
-//        dto.setCompany(existingUser.getCompany());
-//        dto.setJobPosition(job);
-//
-//        model.addAttribute("registrationDto", dto);
-//        model.addAttribute("isEdit", true); // Flag για να ξέρει η φόρμα ότι κάνουμε edit
-//
-//        return "users/registration-form-employer";
-//    }
 
 
     @GetMapping("/explore/employer")
@@ -208,8 +175,6 @@ public class JobController {
             return "redirect:/login?role=employer";
         }
 
-
-
         // Φιλτράρισμα θέσεων εργασίας
         List<JobPosition> employerJobs = company.getJobs().stream()
                 .filter(job -> company.getSubscription() != null &&
@@ -223,7 +188,14 @@ public class JobController {
         }
 
         model.addAttribute("employerJobs", employerJobs);
+
         return "jobs/employer-jobs";
+    }
+
+    @GetMapping("/createNewJob")
+    public String createJobForm(Model model) {
+        model.addAttribute("jobPosition", new JobPosition());
+        return "jobs/job-form";
     }
 
 }

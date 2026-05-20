@@ -8,17 +8,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    // Διαβάζει τη διαδρομή από το application.properties
-    // Αν δεν υπάρχει, χρησιμοποιεί το default "uploads"
-    @Value("${upload.path:uploads}")
-    private String uploadPath;
+    private final String UPLOAD_DIR =
+            System.getProperty("user.dir") + "/uploads/images/";
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/stored-images/**", "/uploads/**")
-                .addResourceLocations(
-                        "file:uploads/images/",
-                        "file:" + uploadPath + "/"
-                );
+
+        registry.addResourceHandler("/uploads/images/**")
+                .addResourceLocations("file:" + UPLOAD_DIR);
     }
 }
