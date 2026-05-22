@@ -80,6 +80,7 @@ public class CompanyController {
             return "users/registration-form-employer";
         }
 
+
         // Έλεγχος υποχρεωτικού αρχείου άδειας
         if (dto.getCertificateFile() == null || dto.getCertificateFile().isEmpty()) {
             result.rejectValue("certificateFile", "error.required", "Το πιστοποιητικό είναι υποχρεωτικό.");

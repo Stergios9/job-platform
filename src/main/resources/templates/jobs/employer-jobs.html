@@ -134,14 +134,14 @@
     <div th:if="${param.success}" class="alert alert-success text-center shadow-sm mb-5" role="alert" style="max-width: 600px; margin: 0 auto 30px auto; border-radius: 15px;">
         <i class="bi bi-check-circle-fill me-2"></i> <strong>Επιτυχία!</strong> Η αγγελία ενημερώθηκε σωστά.
     </div>
-
+    /job-platform/uploads/images
     <div class="container">
         <h1 class="main-title">Οι Αγγελίες μου</h1>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${not #lists.isEmpty(employerJobs)}">
             <div th:each="job : ${employerJobs}" class="col">
                 <div class="card job-card">
-                    <img th:src="@{/uploads/images/{file}(file=${job.imageUrl},v=${job.id})}"
+                    <img th:src="@{/uploads/images/{file}(file=${job.imageUrl})}"
                          class="job-image"
                          alt="Job Image"
                          onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=500';">

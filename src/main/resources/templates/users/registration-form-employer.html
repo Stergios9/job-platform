@@ -118,11 +118,82 @@
       <input type="hidden" th:field="*{user.id}" />
       <input type="hidden" th:field="*{company.id}" />
       <input type="hidden" th:field="*{jobPosition.id}" />
-      <input type="hidden" th:field="*{user.username}" />
-      <input type="hidden" th:field="*{user.password}" />
-      <input type="hidden" th:field="*{company.afm}" />
 
-      <h3>1. Θέση Εργασίας</h3>
+      <h3>1. Στοιχεία Λογαριασμού</h3>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label>Email / Username</label>
+          <input type="email"
+                 th:field="*{user.username}"
+                 placeholder="π.χ. someone@hotmail.com"
+                 class="form-control" required />
+
+          </div>
+
+        <div class="col-md-6 mb-3">
+          <label>Κωδικός Πρόσβασης</label>
+          <input type="password"
+                 th:field="*{user.password}"
+                 class="form-control"
+                 placeholder="Enter a strong password" />
+
+          <div class="text-danger" th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}"></div>
+        </div>
+
+        <div class="col-md-12 mb-3">
+          <label>Πόλη (Έδρα χρήστη)</label>
+          <input type="text" th:field="*{user.city}" class="form-control" th:value="'Nigrita'" placeholder="π.χ. Αθήνα" />
+        </div>
+
+        <div class="col-md-12 mb-3">
+          <label>Όνομα</label>
+          <input type="text" th:field="*{user.nickName}" class="form-control" placeholder="" />
+        </div>
+      </div>
+
+      <div class="section-divider" > </div>
+
+      <h3>2. Στοιχεία Επιχείρησης</h3>
+
+      <div class="row">
+        <div class="col-md-8 mb-3">
+          <label>Επωνυμία Επιχείρησης</label>
+          <input type="text"
+                 th:field="*{company.name}"
+                 class="form-control"
+                 placeholder="π.χ. Acropolis Catering"
+                 required />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>ΑΦΜ</label>
+          <input type="text"
+                 th:field="*{company.afm}"
+                 class="form-control"
+                 pattern="^[0-9]{9}$"
+                 oninput="validate_afm(this,'errorAfm')"
+                 placeholder="9 ψηφία"
+                 maxlength="9"
+                 required />
+
+          <span id="errorAfm" style="color:red;"></span>
+        </div>
+        <div class="mb-3">
+          <label>Άδεια Λειτουργίας Επιχείρησης (PDF/Image)</label>
+
+          <input type="file"
+                 th:field="*{certificateFile}"
+                 class="form-control"
+                 accept=".pdf,image/*"
+                 onchange="validate_certificate(this,'errorCertificate')"
+                 required />
+
+          <span id="errorCertificate" style="color:red;"></span>
+        </div>
+      </div>
+
+      <div class="section-divider" > </div>
+      <h3>3. Θέση Εργασίας</h3>
 
       <div class="row">
         <div class="col-md-8 mb-3">
@@ -244,6 +315,63 @@
       errorSpan.textContent = "";
     }
   }
+
+  function validate_afm(input, errorSpanId) {
+
+    // Ακριβώς 9 αριθμοί
+    const regex = /^[0-9]{9}$/;
+
+    const errorSpan = document.getElementById(errorSpanId);
+
+    if (!regex.test(input.value)) {
+      errorSpan.textContent =
+              "Το ΑΦΜ πρέπει να περιέχει ακριβώς 9 ψηφία.";
+    } else {
+      errorSpan.textContent = "";
+    }
+  }
+
+  function validate_certificate(input, errorSpanId) {
+
+    const file = input.files[0];
+    const errorSpan = document.getElementById(errorSpanId);
+
+    if (!file) {
+      errorSpan.textContent = "";
+      return;
+    }
+
+    // Επιτρεπτοί τύποι
+    const allowedTypes = [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "image/jpg"
+    ];
+
+    // Μέγιστο μέγεθος 5MB
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      errorSpan.textContent =
+              "Επιτρέπονται μόνο PDF, PNG και JPG αρχεία.";
+
+      input.value = "";
+      return;
+    }
+
+    if (file.size > maxSize) {
+      errorSpan.textContent =
+              "Το αρχείο πρέπει να είναι μικρότερο από 5MB.";
+
+      input.value = "";
+      return;
+    }
+
+    errorSpan.textContent = "";
+  }
+
+
 
 </script>
 

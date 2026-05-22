@@ -72,4 +72,5 @@ public class FileUploadService {
             Files.deleteIfExists(Paths.get("uploads/" + folder + "/" + oldFile));
         }
     }
+
 }

@@ -28,7 +28,7 @@ public class Company {
     @Column(unique = true, length = 9)
     @NotBlank(message = "Το ΑΦΜ είναι υποχρεωτικό")
     @Size(min = 9, max = 9, message = "Το ΑΦΜ πρέπει να έχει ακριβώς 9 ψηφία")
-    @Pattern(regexp = "^[0-9]*$", message = "Το ΑΦΜ πρέπει να περιέχει μόνο αριθμούς")
+    @Pattern(regexp = "^[0-9]{9}$", message = "Το ΑΦΜ πρέπει να περιέχει ακριβώς 9 ψηφία")
     private String afm;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
