@@ -135,6 +135,7 @@ public class CompanyController {
                                    Model model) {
         // Βρίσκουμε την εταιρεία του συνδεδεμένου εργοδότη
         User user = userRepository.findByUsername(principal.getName()).get();
+
         if (user == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε ο χρήστης.");
             return "redirect:/login";
@@ -161,4 +162,5 @@ public class CompanyController {
         model.addAttribute("applications", applications);
         return "employers/applications-list";
     }
+
 }

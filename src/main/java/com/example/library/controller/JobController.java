@@ -6,6 +6,7 @@ import com.example.library.entity.JobPosition;
 import com.example.library.entity.User;
 import com.example.library.repository.UserRepository;
 import com.example.library.service.FileUploadService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.ui.Model;
 import com.example.library.repository.JobRepository;
@@ -71,10 +72,11 @@ public class JobController {
         return "jobs/job-details";
     }
 
+
     @PostMapping("/update")
     public String updateJob(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
-                            BindingResult result,  // <--- ΑΥΤΟ ΕΛΕΙΠΕ
-                            Principal principal,
+                            BindingResult result,
+                            Principal principal, RedirectAttributes redirectAttributes,
                             Model model) throws IOException {
 
         User existingUser = userRepository.findByUsername(principal.getName())
@@ -93,17 +95,38 @@ public class JobController {
         JobPosition existingJob = jobRepository.findById(dto.getJobPosition().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + dto.getJobPosition().getId()));
 
-        // 2. Έλεγχος Ασφαλείας (Πολύ σημαντικό!) - Βεβαιωνόμαστε ότι ο χρήστης που κάνει το POST είναι ο ιδιοκτήτης της αγγελίας
+        // SECURITY CHECK
         if (!existingJob.getCompany().getUser().getUsername().equals(principal.getName())) {
             return "redirect:/user/explore/employer?error=unauthorized";
         }
 
+        // ===== UPDATE FIELDS (ONLY IF PROVIDED) =====
+
+        // Title
+        if (dto.getJobPosition().getTitle() != null) {
+            existingJob.setTitle(dto.getJobPosition().getTitle());
+        }
+
+        // Description
+        if (dto.getJobPosition().getDescription() != null) {
+            existingJob.setDescription(dto.getJobPosition().getDescription());
+        }
+
+        // City (if exists in your entity)
+        if (dto.getJobPosition().getCity() != null) {
+            existingJob.setCity(dto.getJobPosition().getCity());
+        }
+
+        // Salary / other fields (example)
+        if (dto.getJobPosition().getHourlyRate() != null) {
+            existingJob.setHourlyRate(dto.getJobPosition().getHourlyRate());
+        }
+
         MultipartFile imageFile = dto.getImageFile();
+
         if (imageFile != null && !imageFile.isEmpty()) {
 
             fileUploadService.replaceFile(existingJob.getImageUrl(), imageFile, "images");
-
-//            String filename = fileUploadService.saveFile(imageFile, "images");
 
             String filename = fileUploadService.saveFile(imageFile, "images");
             existingJob.setImageUrl(filename);
@@ -111,10 +134,24 @@ public class JobController {
 
         // Λόγω CascadeType.ALL, σώζοντας το Job ή την Company, ενημερώνονται και τα υπόλοιπα
         jobRepository.save(existingJob);
+        // Φιλτράρισμα θέσεων εργασίας
 
 
+        Company company = existingJob.getCompany();
+        List<JobPosition> employerJobs = company.getJobs().stream()
+                .filter(job -> company.getSubscription() != null &&
+                        company.getSubscription().isActive())
+                .toList();
+
+        if (employerJobs.isEmpty()) {
+            redirectAttributes.addFlashAttribute("infoMessage", "Δεν έχετε δημοσιεύσει θέσεις εργασίας ή η συνδρομή σας δεν είναι ενεργή.");
+            // Ανακατεύθυνση στο choose-role με παράμετρο role
+            return "redirect:/login?role=employer";
+        }
+        dto.setCompany(company);
+        model.addAttribute("employerJobs", employerJobs);
         model.addAttribute("registrationDto", dto);
-        return "redirect:/jobs/explore/employer?success=updated";
+        return "jobs/employer-jobs";
     }
 
     @GetMapping("/edit/{id}")
@@ -151,7 +188,8 @@ public class JobController {
 
         model.addAttribute("registrationDto", dto);
         model.addAttribute("isEdit", true);
-        return "users/registration-form-employer";
+//        return "users/registration-form-employer";
+        return "jobs/edit-job";
     }
 
 
@@ -193,9 +231,97 @@ public class JobController {
     }
 
     @GetMapping("/createNewJob")
-    public String createJobForm(Model model) {
-        model.addAttribute("jobPosition", new JobPosition());
-        return "jobs/job-form";
+    public String createJobForm(Principal principal,
+                                Model model) {
+
+        // 1. Έλεγχος αν υπάρχει logged-in user
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        // 2. Βρίσκουμε τον user
+        User user = userRepository
+                .findByUsername(principal.getName())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("User not found"));
+
+        // 3. Έλεγχος αν ο user έχει company
+        Company company = user.getCompany();
+
+        if (company == null) {
+            model.addAttribute("error",
+                    "Δεν βρέθηκε εταιρεία για αυτόν τον χρήστη.");
+
+            return "home";
+        }
+
+        // 4. Δημιουργία DTO
+        EmployerRegistrationDTO dto =
+                new EmployerRegistrationDTO();
+
+        // 5. Μεταφορά user/company
+        dto.setUser(user);
+        dto.setCompany(company);
+
+        // 6. Δημιουργία νέας αγγελίας
+        dto.setJobPosition(new JobPosition());
+
+        // 7. Στέλνουμε το DTO στο form
+        model.addAttribute("registrationDto", dto);
+
+        return "jobs/new-job-form";
     }
+
+
+    @Transactional
+    @PostMapping("/saveNewJob")
+    public String saveNewJob(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
+                             BindingResult result,
+                             Principal principal, RedirectAttributes redirectAttributes,
+                             Model model) throws IOException {
+
+
+        // Βρίσκουμε την εταιρεία του συνδεδεμένου εργοδότη
+        User user = userRepository.findByUsername(principal.getName()).get();
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε ο χρήστης.");
+            return "redirect:/login";
+        }
+        if (!user.getRole().equals("ROLE_EMPLOYER")) {
+            return "redirect:/error?error=unauthorized";
+        }
+        Company company = user.getCompany();
+        if (company == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Δεν βρέθηκε εταιρεία συνδεδεμένη με αυτόν τον λογαριασμό.");
+            return "redirect:/login?role=employer";
+        }
+//        dto.setUser(user);
+//        dto.setCompany(company);
+//
+//        if (result.hasErrors()) {
+//            return "jobs/new-job-form";
+//        }
+
+        JobPosition job = new JobPosition();
+        job.setCompany(company);
+        job.setTitle(dto.getJobPosition().getTitle());
+        job.setDescription(dto.getJobPosition().getDescription());
+        job.setCity(dto.getJobPosition().getCity());
+        job.setHourlyRate(dto.getJobPosition().getHourlyRate());
+
+
+        MultipartFile imageFile = dto.getImageFile();
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String filename = fileUploadService.saveFile(imageFile, "images");
+            job.setImageUrl(filename);
+        }
+
+        jobRepository.save(job);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Η νέα θέση εργασίας δημιουργήθηκε με επιτυχία!");
+        return "redirect:/home";
+    }
+
 
 }

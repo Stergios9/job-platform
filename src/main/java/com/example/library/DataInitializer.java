@@ -74,18 +74,18 @@ public class DataInitializer {
             job1.setTitle("Waiter");
             job1.setCity("Athens");
             job1.setHourlyRate(8.50);
-            job1.setDescription("We are looking for a friendly and efficient waiter to join our team at Acropolis Group. The ideal candidate will have excellent communication skills, a positive attitude, and the ability to work in a fast-paced environment. Responsibilities include taking orders, serving food and beverages, and ensuring customer satisfaction.");
-            job1.setImageUrl("apothikarios.png");
+            job1.setDescription("We are looking for a friendly and efficient waiter.");
+            job1.setImageUrl("delivery.jfif");
 
             job1.setCompany(company1);
             jobRepository.save(job1);
             company1.addJob(job1);
 
             JobPosition comp1Job2 = new JobPosition();
-            comp1Job2.setTitle("Bartender");
+            comp1Job2.setTitle("Storeman");
             comp1Job2.setCity("Rhodes");
             comp1Job2.setHourlyRate(9.50);
-            comp1Job2.setDescription("We are looking for a friendly and efficient waiter to join our team at Acropolis Group. The ideal candidate will have excellent communication skills, a positive attitude, and the ability to work in a fast-paced environment. Responsibilities include taking orders, serving food and beverages, and ensuring customer satisfaction.");
+            comp1Job2.setDescription("We are looking for a friendly and efficient storeman.");
             comp1Job2.setImageUrl("storeman.jpeg");
 
             comp1Job2.setCompany(company1);

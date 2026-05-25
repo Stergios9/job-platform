@@ -163,6 +163,7 @@ public class UserController {
         Company company = existingUser.getCompany();
         existingUser.setCompany(company);
         company.setUser(existingUser);
+        company.setName(dto.getCompany().getName());
 
         company.setVerified(true);
 //        companyService.createSubscription(company);
