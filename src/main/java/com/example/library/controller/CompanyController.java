@@ -10,6 +10,7 @@ import com.example.library.repository.WorkerProfileRepository;
 import com.example.library.service.CompanyService;
 import com.example.library.service.FileUploadService;
 import com.example.library.service.UserService;
+import com.example.library.validation.CreateGroup;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -72,6 +74,7 @@ public class CompanyController {
     @Transactional
     @PostMapping("/register/employer")
     public String handleRegistration(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
+                                     @Validated(CreateGroup.class)
                                      BindingResult result,Model model) {
 
         if (result.hasErrors()) {

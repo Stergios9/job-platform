@@ -8,6 +8,7 @@ import com.example.library.entity.WorkerProfile;
 import com.example.library.repository.UserRepository;
 import com.example.library.service.CompanyService;
 import com.example.library.service.FileUploadService;
+import com.example.library.validation.UpdateGroup;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -135,6 +137,7 @@ public class UserController {
     @PostMapping("/company/update")
     @Transactional
     public String updateUserAndCompany(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
+                                       @Validated(UpdateGroup.class)
                                         RedirectAttributes redirectAttributes,
                                         BindingResult result,  // <--- ΑΥΤΟ ΕΛΕΙΠΕ
                                         Principal principal,

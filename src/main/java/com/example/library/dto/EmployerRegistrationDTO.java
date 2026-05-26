@@ -12,8 +12,10 @@ public class EmployerRegistrationDTO {
 
     @Valid
     private User user;
+
     @Valid
     private Company company;
+
     private JobPosition jobPosition;
 
     private MultipartFile certificateFile;

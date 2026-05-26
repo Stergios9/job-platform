@@ -127,20 +127,16 @@
                  required />
         </div>
 
-<!--        <div class="col-md-6 mb-3" th:if="${isEdit}">-->
-<!--          <label>Κωδικός Πρόσβασης</label>-->
-<!--          <input autocomplete="new-password" type="password" th:field="*{user.password}"-->
-<!--                 class="form-control" placeholder="********" required />-->
-<!--        </div>-->
 
         <div class="col-md-6 mb-3" th:if="${(isEdit)}">
           <label>Κωδικός Πρόσβασης</label>
           <input type="password"
                  th:field="*{user.password}"
                  class="form-control"
+                 oninput="validate_password(this,'passwordError')"
                  placeholder="Leave empty to keep current password" />
 
-          <div class="text-danger" th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}"></div>
+          <span id="passwordError" style="color:red;"></span>
         </div>
 
         <div class="col-md-12 mb-3">
@@ -191,6 +187,31 @@
     </form>
   </div>
 </div>
+
+<script>
+
+  // ΟΧΙ ΠΟΛΥ ΑΥΣΤΗΡΟΣ Ο ΚΩΔΙΚΟΣ ΓΙΑ ΝΑ ΜΗΝ ΑΠΟΘΑΡΡΥΝΕΙ ΤΟΥΣ ΧΡΗΣΤΕΣ
+  function validate_password(input, errorSpanId) {
+
+    const errorSpan = document.getElementById(errorSpanId);
+
+    // Τουλάχιστον 6 χαρακτήρες
+    // Επιτρέπει γράμματα, αριθμούς και basic symbols
+    const regex = /^[A-Za-z0-9!@#$%^&*()_+=\-]{6,}$/;
+
+    if (!regex.test(input.value)) {
+
+      errorSpan.textContent =
+              "Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες.";
+
+    } else {
+
+      errorSpan.textContent = "";
+
+    }
+  }
+
+</script>
 </body>
 </html>
 
