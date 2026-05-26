@@ -120,7 +120,7 @@
       <input type="hidden" th:field="*{company.id}" />
       <input type="hidden" th:field="*{jobPosition.id}" />
 
-      <h3>Νέα Θέση Εργασίας</h3>
+      <h3>Στοιχεία Θέσης Εργασίας</h3>
 
       <div class="row">
         <div class="col-md-8 mb-3">
@@ -171,7 +171,7 @@
 
       <div class="section-divider"></div>
 
-      <h3>3. Εικόνα Αγγελίας / Επιχείρησης</h3>
+      <h3>Εικόνα Αγγελίας / Επιχείρησης</h3>
 
       <div class="row">
         <div class="col-md-12 mb-3">
@@ -221,7 +221,9 @@
 
   function validate_varchar_20(input, errorSpanId) {
 
-    const regex = /^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήί\s]{1,20}$/;
+    // const regex = /^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήί0-9\s]{1,20}$/;
+    // input.value = input.value.replace(/[^A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήί0-9\s'-]/g, '');
+    const regex = /^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήί0-9\s'-]{1,20}$/;
     const errorSpan = document.getElementById(errorSpanId);
 
     if (!regex.test(input.value)) {
