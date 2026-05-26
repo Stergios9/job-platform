@@ -135,9 +135,10 @@ public class UserController {
     @PostMapping("/company/update")
     @Transactional
     public String updateUserAndCompany(@Valid @ModelAttribute("registrationDto") EmployerRegistrationDTO dto,
-                            BindingResult result,  // <--- ΑΥΤΟ ΕΛΕΙΠΕ
-                            Principal principal,
-                            Model model) throws IOException {
+                                        RedirectAttributes redirectAttributes,
+                                        BindingResult result,  // <--- ΑΥΤΟ ΕΛΕΙΠΕ
+                                        Principal principal,
+                                        Model model) throws IOException {
 
         // Ελέγχουμε αν υπάρχουν σφάλματα ΠΟΥ ΔΕΝ ΑΦΟΡΟΥΝ τον κωδικό
         boolean hasOtherErrors = result.getFieldErrors().stream()
@@ -179,6 +180,12 @@ public class UserController {
         }
 
         companyService.saveCompany(company);
+
+        // SUCCESS MESSAGE
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Τα στοιχεία ενημερώθηκαν με επιτυχία!"
+        );
 
         return "redirect:/jobs/explore/employer?success=updated";
     }

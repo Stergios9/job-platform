@@ -1,5 +1,6 @@
 package com.example.library.entity;
 
+import com.example.library.validation.CreateGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,8 +22,8 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    @NotBlank(message = "Ο κωδικός είναι υποχρεωτικός")
-    @Size(min = 8, message = "Τουλάχιστον 8 χαρακτήρες")
+    @NotBlank(groups = CreateGroup.class)
+    @Size(min = 8, groups = CreateGroup.class)
     private String password;
 
     @Column(nullable = false)

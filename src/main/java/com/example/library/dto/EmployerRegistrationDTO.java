@@ -5,6 +5,8 @@ import com.example.library.entity.JobPosition;
 import com.example.library.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.library.validation.CreateGroup;
+import com.example.library.validation.UpdateGroup;
 
 public class EmployerRegistrationDTO {
 
