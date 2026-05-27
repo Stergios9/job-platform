@@ -160,7 +160,7 @@
                  th:field="*{jobPosition.title}"
                  class="form-control"
                  maxlength="20"
-                 pattern="^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήί\s]{1,20}$"
+                 pattern="^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέύόώήί\s]{1,20}$"
                  oninput="validate_varchar_20(this,'errorTitle')"
                  placeholder="π.χ. Σερβιτόρος Α'"
                  required />
@@ -238,7 +238,7 @@
 
   function validate_varchar_20(input, errorSpanId) {
 
-    const regex = /^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήί\s]{1,20}$/;
+    const regex = /^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήώόύί\s]{1,20}$/;
     const errorSpan = document.getElementById(errorSpanId);
 
     if (!regex.test(input.value)) {
@@ -259,7 +259,7 @@
     // - βασικά σημεία στίξης
     // μέχρι 200 χαρακτήρες
 
-    const regex = /^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέήί0-9\s.,!;:()'"€%-]{1,200}$/;
+    const regex = /^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέόώήύί0-9\s.,!;:()'"€%-]{1,200}$/;
 
     const errorSpan = document.getElementById(errorSpanId);
 

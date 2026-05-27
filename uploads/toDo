@@ -3,3 +3,4 @@
 3) Add new JobPosition
 4) select language
 5) JobController in "saveNewJob" --> if resultltsHasErrors--> redirect Attribute or error message in next form
+6) 1) Both languages in all pages
