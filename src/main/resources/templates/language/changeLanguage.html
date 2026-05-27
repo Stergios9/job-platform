@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Switch Language</title>
+</head>
+<body>
+    <h2 th:text="#{hello}">Hello!</h2>
+
+    <form action="/change-language" method="get">
+        <button type="submit" name="lang" value="en">English</button>
+        <button type="submit" name="lang" value="el">Ελληνικά</button>
+    </form>
+
+</body>
+</html>

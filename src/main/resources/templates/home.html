@@ -137,45 +137,62 @@
         <h1 class="brand-name">Crew Now</h1>
 
         <p class="welcome-text">
-            Γεια σου, <span class="user-highlight" th:text="${user.username}">Επισκέπτη</span>!<br>
+            <span th:text="#{home.welcome}">Hello</span>,
+            <span class="user-highlight" th:text="${user.username}">User</span>!
         </p>
 
+
+        <!-- WORKER -->
         <div th:if="${isWorker}">
             <form th:action="@{/jobs/explore}" method="get">
                 <button type="submit" class="btn-action btn-worker-action">
-                    <i class="bi bi-search me-2"></i> Αναζήτηση Θέσεων Εργασίας
+                    <i class="bi bi-search me-2"></i>
+                    <span th:text="#{home.searchJobs}">Search Jobs</span>
                 </button>
             </form>
         </div>
 
+        <!-- EMPLOYER -->
         <div th:if="${isEmployer}" class="d-grid gap-2">
+
             <form th:action="@{/jobs/explore/employer}" method="get">
                 <button type="submit" class="btn-action btn-employer-view">
-                    <i class="bi bi-briefcase me-2"></i> Δες τις Αγγελίες σου
+                    <i class="bi bi-briefcase me-2"></i>
+                    <span th:text="#{home.viewJobs}">View Jobs</span>
                 </button>
             </form>
 
             <form th:action="@{/company/applications/{r}(r='ROLE_EMPLOYER')}" method="get">
                 <button type="submit" class="btn-action btn-employer-create">
-                    <i class="bi bi-plus-circle me-2"></i> Διαχείριση Αιτήσεων
+                    <i class="bi bi-plus-circle me-2"></i>
+                    <span th:text="#{home.manageApplications}">Manage Applications</span>
                 </button>
             </form>
 
             <form th:action="@{/jobs/createNewJob}" method="get">
                 <button type="submit" class="btn-action btn-employer-create">
-                    <i class="bi bi-plus-circle me-2" style="margin-left: 50px;"></i> Δημιουργία Νέας Αγγελίας
+                    <i class="bi bi-plus-circle me-2"></i>
+                    <span th:text="#{home.createJob}">Create Job</span>
                 </button>
             </form>
+
         </div>
 
+        <!-- FOOTER TEXT -->
         <div class="mt-4 pt-3 border-top">
-            <p class="small text-muted" th:if="${isEmployer}">
-                Διαχειριστείτε το προφίλ της εταιρείας σας "Acropolis Group".
+
+            <p class="small text-muted" th:if="${isEmployer}"
+               th:text="#{home.employer.note}">
+                Manage your company profile
             </p>
-            <p class="small text-muted" th:if="${isWorker}">
-                Βελτιώστε το προφίλ σας για περισσότερες πιθανότητες πρόσληψης.
+
+            <p class="small text-muted" th:if="${isWorker}"
+               th:text="#{home.worker.note}">
+                Improve your profile
             </p>
+
         </div>
+
     </div>
 </div>
 <script>

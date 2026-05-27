@@ -2,4 +2,4 @@
 2) if there are not jobPosition for a Company ("/explore/employer")  there is a message and a link "@{/jobs/post}" which not work
 3) Add new JobPosition
 4) select language
-5) JobController in "saveNewJob" --> if reslultsHasErrors--> redirect Attribute or error message in next form
+5) JobController in "saveNewJob" --> if resultltsHasErrors--> redirect Attribute or error message in next form
