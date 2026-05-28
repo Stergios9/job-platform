@@ -8,6 +8,7 @@ import com.example.library.repository.UserRepository;
 import com.example.library.service.FileUploadService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import com.example.library.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class JobController {
     FileUploadService fileUploadService;
 
     @GetMapping("/explore")
+//    @PreAuthorize("hasRole('WORKER')")
     public String explore(Model model, Principal principal) {
 
         User user = principal != null ? userRepository.findByUsername(principal.getName())

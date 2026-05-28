@@ -109,7 +109,10 @@
 
 <div class="registration-wrapper">
   <div class="registration-container">
-    <h2>Επεξεργασία Εταιρίας Εγοδότη</h2>
+
+    <h2 th:text="#{job.edit.company}">
+      Edit Employer Company
+    </h2>
 
     <form th:action="@{/jobs/saveNewJob}"
           th:object="${registrationDto}"
@@ -120,119 +123,191 @@
       <input type="hidden" th:field="*{company.id}" />
       <input type="hidden" th:field="*{jobPosition.id}" />
 
+      <!-- SECTION 1 -->
 
-      <h3>1. Στοιχεία Επιχείρησης</h3>
+      <h3 th:text="#{job.section.company}">
+        1. Company Information
+      </h3>
 
       <div class="row">
+
         <div class="col-md-8 mb-3">
-          <label>Επωνυμία Επιχείρησης</label>
+
+          <label th:text="#{job.company.name}">
+            Company Name
+          </label>
+
           <input type="text"
                  th:field="*{company.name}"
                  class="form-control"
-                 placeholder="π.χ. Acropolis Catering"
+                 th:placeholder="#{job.company.placeholder}"
                  readonly />
         </div>
 
         <div class="col-md-4 mb-3">
-          <label>ΑΦΜ</label>
+
+          <label th:text="#{job.company.afm}">
+            VAT Number
+          </label>
+
           <input type="text"
                  th:field="*{company.afm}"
                  class="form-control"
                  pattern="^[0-9]{9}$"
                  oninput="validate_afm(this,'errorAfm')"
-                 placeholder="9 ψηφία"
+                 th:placeholder="#{job.company.afm.placeholder}"
                  maxlength="9"
-                 readonly
-          />
+                 readonly />
 
           <span id="errorAfm" style="color:red;"></span>
+
         </div>
 
       </div>
 
-      <div class="section-divider" > </div>
-      <h3>2. Θέση Εργασίας</h3>
+      <div class="section-divider"></div>
+
+      <!-- SECTION 2 -->
+
+      <h3 th:text="#{job.section.position}">
+        2. Job Position
+      </h3>
 
       <div class="row">
+
         <div class="col-md-8 mb-3">
-          <label>Τίτλος Θέσης</label>
+
+          <label th:text="#{job.title}">
+            Job Title
+          </label>
+
           <input type="text"
                  th:field="*{jobPosition.title}"
                  class="form-control"
                  maxlength="20"
-                 pattern="^[A-Za-zΑ-Ωα-ωΆΈΉΊΌΎΏάέύόώήί\s]{1,20}$"
+                 pattern="^[\\p{L}\\s'-]{1,20}$"
                  oninput="validate_varchar_20(this,'errorTitle')"
-                 placeholder="π.χ. Σερβιτόρος Α'"
+                 th:placeholder="#{job.title.placeholder}"
                  required />
 
           <span id="errorTitle" style="color:red;"></span>
+
         </div>
 
         <div class="col-md-4 mb-3">
-          <label>Ωρομίσθιο (€)</label>
-          <input type="number" th:field="*{jobPosition.hourlyRate}"
+
+          <label th:text="#{job.hourlyRate}">
+            Hourly Rate (€)
+          </label>
+
+          <input type="number"
+                 th:field="*{jobPosition.hourlyRate}"
                  class="form-control"
                  placeholder="0.00"
                  step="0.1" />
+
         </div>
 
         <div class="col-md-12 mb-3">
-          <label>Περιγραφή καθηκόντων</label>
+
+          <label th:text="#{job.description}">
+            Job Description
+          </label>
 
           <textarea th:field="*{jobPosition.description}"
                     class="form-control"
                     rows="3"
                     maxlength="200"
                     oninput="validate_description(this,'errorDescription')"
-                    placeholder="Περιγράψτε τι ζητάτε από τον εργαζόμενο...">
-          </textarea>
+                    th:placeholder="#{job.description.placeholder}">
+                    </textarea>
 
           <span id="errorDescription" style="color:red;"></span>
 
         </div>
 
         <div class="col-md-12 mb-3">
-          <label>Πόλη Εργασίας</label>
-          <input type="text" th:field="*{jobPosition.city}"
+
+          <label th:text="#{job.city}">
+            Job City
+          </label>
+
+          <input type="text"
+                 th:field="*{jobPosition.city}"
                  class="form-control"
-                 placeholder="Τοποθεσία εργασίας" />
+                 th:placeholder="#{job.city.placeholder}" />
+
         </div>
-        <!--        <input type="hidden" th:field="*{jobPosition.imageUrl}" />-->
+
       </div>
 
       <div class="section-divider"></div>
 
-      <h3>3. Εικόνα Αγγελίας / Επιχείρησης</h3>
+      <!-- SECTION 3 -->
+
+      <h3 th:text="#{job.section.image}">
+        3. Job / Company Image
+      </h3>
+
       <div class="row">
+
         <div class="col-md-12 mb-3">
-          <label>Φωτογραφία Αγγελίας</label>
-          <input type="file" th:field="*{imageFile}"
+
+          <label th:text="#{job.image}">
+            Job Image
+          </label>
+
+          <input type="file"
+                 th:field="*{imageFile}"
                  class="form-control"
                  accept="image/*" />
 
-          <div class="form-text">Ανεβάστε μια φωτογραφία που αντιπροσωπεύει τη θέση εργασίας ή την επιχείρησή σας.</div>
-
-          <div th:if="${registrationDto.jobPosition.imageUrl != null}" class="mt-2">
-            <small class="text-muted">Τρέχουσα εικόνα: </small>
-            <span class="badge bg-secondary" th:text="${registrationDto.jobPosition.imageUrl}">image.jpg</span>
+          <div class="form-text"
+               th:text="#{job.image.help}">
+            Upload an image representing your company or position.
           </div>
+
+          <div th:if="${registrationDto.jobPosition.imageUrl != null}"
+               class="mt-2">
+
+            <small class="text-muted"
+                   th:text="#{job.image.current}">
+              Current image:
+            </small>
+
+            <span class="badge bg-secondary"
+                  th:text="${registrationDto.jobPosition.imageUrl}">
+                            image.jpg
+            </span>
+
+          </div>
+
         </div>
+
       </div>
 
       <input type="hidden" th:field="*{jobPosition.imageUrl}" />
 
-      <button type="submit" class="btn btn-submit shadow-sm">
-        Ενημέρωση Λογαριασμού & Ανάρτηση
+      <!-- BUTTONS -->
+
+      <button type="submit"
+              class="btn btn-submit shadow-sm"
+              th:text="#{job.submit}">
+        Update Account & Publish
       </button>
+
       <button type="button"
               class="btn btn-submit shadow-sm"
-              onclick="window.location.href='/jobs/explore/employer'">
-        Ακύρωση
+              onclick="window.location.href='/jobs/explore/employer'"
+              th:text="#{job.cancel}">
+        Cancel
       </button>
 
     </form>
+
   </div>
 </div>
+
 
 <script th:inline="javascript">
 

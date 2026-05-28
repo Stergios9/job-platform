@@ -216,86 +216,210 @@
 <div class="content-wrapper">
     <div class="details-card shadow-lg">
 
-        <div class="job-header-wrapper" style="height: 250px;" th:if="${job.imageUrl != null and !#strings.isEmpty(job.imageUrl)}">
+        <div class="job-header-wrapper"
+             style="height: 250px;"
+             th:if="${job.imageUrl != null and !#strings.isEmpty(job.imageUrl)}">
+
             <img th:src="@{'/images/' + ${job.imageUrl}}"
                  class="job-header-image"
                  alt="Job Header"
                  onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200';">
+
         </div>
 
-        <div th:unless="${job.imageUrl != null and !#strings.isEmpty(job.imageUrl)}" class="no-image-placeholder text-muted" style="height: 150px;">
+        <div th:unless="${job.imageUrl != null and !#strings.isEmpty(job.imageUrl)}"
+             class="no-image-placeholder text-muted"
+             style="height: 150px;">
+
             <i class="bi bi-briefcase-fill" style="font-size: 3rem;"></i>
+
         </div>
 
         <div class="details-body">
 
+            <!-- HEADER -->
+
             <div class="row align-items-center mb-4">
+
                 <div class="col-lg-8 text-center text-lg-start">
-                    <h1 class="job-title-large" style="font-size: 2.2rem;" th:text="${job.title}">Τίτλος Θέσης</h1>
+
+                    <h1 class="job-title-large"
+                        style="font-size: 2.2rem;"
+                        th:text="${job.title}">
+                        Job Title
+                    </h1>
+
                     <a href="#" class="company-link">
-                        <i class="bi bi-building"></i> <span th:text="${job.company.name}">Όνομα Εταιρείας</span>
+                        <i class="bi bi-building"></i>
+                        <span th:text="${job.company.name}">
+                            Company Name
+                        </span>
                     </a>
+
                 </div>
+
                 <div class="col-lg-4 text-center text-lg-end mt-3 mt-lg-0">
+
                     <div class="pay-badge-large">
-                        <span th:text="${job.hourlyRate}">0.00</span>€ / ώρα
+
+                        <span th:text="${job.hourlyRate}">0.00</span>
+
+                        <span th:text="#{job.perHour}">
+                            € / hour
+                        </span>
+
                     </div>
+
                 </div>
+
             </div>
+
+            <!-- INFO SECTION -->
 
             <div class="info-section py-3">
+
                 <div class="row g-3">
+
                     <div class="col-md-4 text-center border-end">
-                        <div class="text-muted small fw-bold text-uppercase">Τοποθεσία</div>
-                        <div class="fw-bold text-dark"><i class="bi bi-geo-alt-fill text-danger"></i> <span th:text="${job.city}">Αθήνα</span></div>
+
+                        <div class="text-muted small fw-bold text-uppercase"
+                             th:text="#{job.location}">
+                            Location
+                        </div>
+
+                        <div class="fw-bold text-dark">
+
+                            <i class="bi bi-geo-alt-fill text-danger"></i>
+
+                            <span th:text="${job.city}">
+                                Athens
+                            </span>
+
+                        </div>
+
                     </div>
+
                     <div class="col-md-4 text-center border-end">
-                        <div class="text-muted small fw-bold text-uppercase">Κατηγορία</div>
-                        <div class="fw-bold text-dark"><i class="bi bi-tag-fill text-primary"></i> Εστίαση</div>
+
+                        <div class="text-muted small fw-bold text-uppercase"
+                             th:text="#{job.category}">
+                            Category
+                        </div>
+
+                        <div class="fw-bold text-dark">
+
+                            <i class="bi bi-tag-fill text-primary"></i>
+
+                            <span th:text="#{job.category.default}">
+                                Hospitality
+                            </span>
+
+                        </div>
+
                     </div>
+
                     <div class="col-md-4 text-center">
-                        <div class="text-muted small fw-bold text-uppercase">Επικοινωνία</div>
-                        <div class="fw-bold text-dark"><i class="bi bi-envelope-at-fill text-success"></i> <span th:text="${job.company.user.username}">email</span></div>
+
+                        <div class="text-muted small fw-bold text-uppercase"
+                             th:text="#{job.contact}">
+                            Contact
+                        </div>
+
+                        <div class="fw-bold text-dark">
+
+                            <i class="bi bi-envelope-at-fill text-success"></i>
+
+                            <span th:text="${job.company.user.username}">
+                                email
+                            </span>
+
+                        </div>
+
                     </div>
+
                 </div>
+
             </div>
+
+            <!-- DESCRIPTION -->
 
             <div class="section-label mt-4">
-                <i class="bi bi-card-text"></i> Περιγραφή Θέσης
-            </div>
-            <div class="description-text mb-4" style="font-size: 1.05rem;" th:text="${job.description}">
-                Περιγραφή...
+
+                <i class="bi bi-card-text"></i>
+
+                <span th:text="#{job.description.title}">
+                    Job Description
+                </span>
+
             </div>
 
-            <div th:if="${role == 'ROLE_WORKER'}" class="d-flex justify-content-center w-100 my-4">
-                <form th:action="@{/worker/apply/{jobId}(jobId=${job.id})}" method="post">
-                    <button type="submit" class="btn btn-apply px-5 shadow-lg">
-                        Κάνε Αίτηση <i class="bi bi-send-fill ms-2"></i>
-                    </button>
-                </form>
+            <div class="description-text mb-4"
+                 style="font-size: 1.05rem;"
+                 th:text="${job.description}">
+                Description...
             </div>
+
+            <!-- WORKER ACTION -->
+
+            <div th:if="${role == 'ROLE_WORKER'}"
+                 class="d-flex justify-content-center w-100 my-4">
+
+                <form th:action="@{/worker/apply/{jobId}(jobId=${job.id})}"
+                      method="post">
+
+                    <button type="submit"
+                            class="btn btn-apply px-5 shadow-lg"
+                            th:text="#{job.apply}">
+                        Apply
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- EMPLOYER ACTION -->
 
             <div th:if="${role == 'ROLE_EMPLOYER'}">
-                <form th:action="@{/jobs/edit/{id}(id=${job.id})}"  method="post">
-                    <button type="submit" class="btn btn-apply px-5 shadow" STYLE="">
-                        Κάνε Αίτηση <i class="bi bi-send-fill ms-2"></i>
+
+                <form th:action="@{/jobs/edit/{id}(id=${job.id})}"
+                      method="post">
+
+                    <button type="submit"
+                            class="btn btn-apply px-5 shadow">
+
+                        <span th:text="#{job.edit}">
+                            Edit
+                        </span>
+
+                        <i class="bi bi-pencil-square ms-2"></i>
+
                     </button>
+
                 </form>
+
             </div>
 
-<!--            <div th:if="${role == 'ROLE_EMPLOYER'}">-->
-<!--                <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn btn-apply px-5 shadow" style="background-color: #2a6f75;">-->
-<!--                    Επεξεργασία <i class="bi bi-pencil-square ms-2"></i>-->
-<!--                </a>-->
-<!--            </div>-->
+            <!-- BACK BUTTON -->
 
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 pt-3 border-top">
-                <a href="javascript:history.back()" class="btn-back-custom mb-3 mb-md-0">
-                    <i class="bi bi-arrow-left-circle"></i> Επιστροφή
+
+                <a href="javascript:history.back()"
+                   class="btn-back-custom mb-3 mb-md-0">
+
+                    <i class="bi bi-arrow-left-circle"></i>
+
+                    <span th:text="#{general.back}">
+                        Back
+                    </span>
+
                 </a>
 
             </div>
-        </div> </div> </div>
+
+        </div>
+
+    </div>
+</div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

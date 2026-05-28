@@ -135,8 +135,8 @@
          class="alert alert-success text-center shadow-sm mb-4"
          role="alert"
          style="max-width: 700px;
-            margin: 20px auto;
-            border-radius: 15px;">
+                margin: 20px auto;
+                border-radius: 15px;">
 
         <i class="bi bi-check-circle-fill me-2"></i>
 
@@ -144,74 +144,140 @@
 
     </div>
 
-
     <div class="container">
-        <h1 class="main-title">Οι Αγγελίες μου</h1>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${not #lists.isEmpty(employerJobs)}">
+        <h1 class="main-title"
+            th:text="#{employer.jobs.title}">
+            My Job Posts
+        </h1>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"
+             th:if="${not #lists.isEmpty(employerJobs)}">
+
             <div th:each="job : ${employerJobs}" class="col">
+
                 <div class="card job-card">
+
                     <img th:src="@{'/uploads/images/' + ${job.imageUrl}}"
                          class="job-image"
                          alt="Job Image"
                          onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=500';">
 
                     <div class="card-body p-4">
-                        <h3 class="job-title" th:text="${job.title}">Τίτλος</h3>
-                        <span class="company-name text-muted fw-bold d-block mb-3" th:text="'🏢 ' + ${job.company.name}">Εταιρεία</span>
+
+                        <h3 class="job-title"
+                            th:text="${job.title}">
+                            Title
+                        </h3>
+
+                        <span class="company-name text-muted fw-bold d-block mb-3"
+                              th:text="'🏢 ' + ${job.company.name}">
+                            Company
+                        </span>
 
                         <div class="mb-3">
+
                             <span class="badge bg-light text-dark border p-2">
-                                📍 <span th:text="${job.city}">Πόλη</span>
+                                📍 <span th:text="${job.city}">City</span>
                             </span>
+
                         </div>
 
                         <div class="pay-badge mb-3">
-                            <span th:text="${job.hourlyRate}">0</span>€ / ώρα
+
+                            <span th:text="${job.hourlyRate}">0</span>
+
+                            <span th:text="#{employer.jobs.perHour}">
+                                € / hour
+                            </span>
+
                         </div>
 
-                        <p class="card-text text-muted small" th:text="${#strings.abbreviate(job.description, 90)}">
-                            Σύντομη περιγραφή...
+                        <p class="card-text text-muted small"
+                           th:text="${#strings.abbreviate(job.description, 90)}">
+
+                            Short description...
+
                         </p>
 
-                        <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn-edit">
-                            ✏️ Επεξεργασία Αγγελίας
+                        <a th:href="@{/jobs/edit/{id}(id=${job.id})}"
+                           class="btn-edit"
+                           th:text="#{employer.jobs.edit}">
+                            Edit Job Post
                         </a>
+
                     </div>
 
                 </div>
+
             </div>
-            <!-- Add New Job Card -->
+
+            <!-- ADD NEW JOB -->
+
             <div class="col">
+
                 <a th:href="@{/jobs/createNewJob}"
                    class="card job-card d-flex align-items-center justify-content-center text-decoration-none"
-                   style="min-height: 100%; border: 2px dashed #1A494D; background: rgba(255,255,255,0.7);">
+                   style="min-height: 100%;
+                          border: 2px dashed #1A494D;
+                          background: rgba(255,255,255,0.7);">
 
                     <div class="text-center">
+
                         <i class="bi bi-plus-lg fs-1 text-success"></i>
-                        <p class="mt-2 fw-bold text-dark">Νέα Αγγελία</p>
+
+                        <p class="mt-2 fw-bold text-dark"
+                           th:text="#{employer.jobs.new}">
+                            New Job Post
+                        </p>
+
                     </div>
 
                 </a>
+
             </div>
-<!--            Add new JobPosition Button (Floating)-->
-<!--            <a th:href="@{/jobs/createNewJob}"-->
-<!--               class="btn btn-success position-fixed bottom-0 end-0 m-4 rounded-circle shadow"-->
-<!--               style="width:60px; height:60px; display:flex; align-items:center; justify-content:center;">-->
-<!--                <i class="bi bi-plus-lg fs-3"></i>-->
-<!--            </a>-->
 
         </div>
 
-        <div th:if="${#lists.isEmpty(employerJobs)}" class="empty-state shadow">
-            <h2 class="text-dark mb-3 fw-bold">Δεν έχετε δημοσιεύσει αγγελίες ακόμα.</h2>
-            <p class="text-muted mb-4">Ξεκινήστε τώρα δημιουργώντας την πρώτη σας θέση εργασίας!</p>
+        <!-- EMPTY STATE -->
+
+        <div th:if="${#lists.isEmpty(employerJobs)}"
+             class="empty-state shadow">
+
+            <h2 class="text-dark mb-3 fw-bold"
+                th:text="#{employer.jobs.empty}">
+                You have not published job posts yet.
+            </h2>
+
+            <p class="text-muted mb-4"
+               th:text="#{employer.jobs.empty.subtitle}">
+                Start now by creating your first job post!
+            </p>
+
             <div class="d-grid gap-2 d-md-flex justify-content-center">
-                <a th:href="@{/jobs/post}" class="btn btn-primary btn-lg px-5 shadow-sm" style="background-color: #1A494D; border:none; border-radius: 12px;">Δημιουργία Αγγελίας</a>
-                <a th:href="@{/home}" class="btn btn-outline-secondary btn-lg px-5" style="border-radius: 12px;">Επιστροφή</a>
+
+                <a th:href="@{/jobs/post}"
+                   class="btn btn-primary btn-lg px-5 shadow-sm"
+                   style="background-color: #1A494D;
+                          border:none;
+                          border-radius: 12px;"
+                   th:text="#{employer.jobs.create}">
+                    Create Job Post
+                </a>
+
+                <a th:href="@{/home}"
+                   class="btn btn-outline-secondary btn-lg px-5"
+                   style="border-radius: 12px;"
+                   th:text="#{general.back}">
+                    Back
+                </a>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
 <script>

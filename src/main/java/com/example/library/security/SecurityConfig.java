@@ -35,7 +35,7 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/uploads/images/**"
                         ).permitAll()
-
+                        .requestMatchers("/jobs/explore").hasRole("WORKER")
                         .requestMatchers("/jobs/post").hasRole("EMPLOYER")
                         .anyRequest().authenticated()
                 )

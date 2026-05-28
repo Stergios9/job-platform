@@ -1,6 +1,5 @@
-1) When edit Profile as Company if i change the company fields are not saved
-2) if there are not jobPosition for a Company ("/explore/employer")  there is a message and a link "@{/jobs/post}" which not work
-3) Add new JobPosition
-4) select language
-5) JobController in "saveNewJob" --> if resultltsHasErrors--> redirect Attribute or error message in next form
-6) 1) Both languages in all pages
+1) if there are not jobPosition for a Company ("/explore/employer")  there is a message and a link "@{/jobs/post}" which not work
+2) JobController in "saveNewJob" --> if resultltsHasErrors--> redirect Attribute or error message in next form
+3) 1) Both languages in all pages
+4) "jobs/details/775" --> edit does not work
+5) Manage Applications as an Employer
